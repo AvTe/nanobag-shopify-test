@@ -1,0 +1,156 @@
+/*
+  Logo bar
+  --------
+  One row of press logos in a rounded card. On small screens the row is wider
+  than the viewport, so it scrolls; on desktop it wraps and centres. The
+  difference is what the row does when it runs out of room, not a second
+  layout, so the markup is identical at every width.
+*/
+
+.logo-bar {
+  --logo-bar-gap: clamp(1.25rem, 0.4rem + 3.6vw, 3.5rem);
+
+  padding-inline: clamp(0.75rem, 0.3rem + 2vw, 1.5rem);
+  padding-block: var(--logo-bar-padding-top, 0) var(--logo-bar-padding-bottom, 0);
+}
+
+.logo-bar__card {
+  display: flex;
+  align-items: center;
+  gap: var(--logo-bar-gap);
+  max-width: var(--page-width, 1400px);
+  margin-inline: auto;
+  padding: clamp(1rem, 0.7rem + 1.4vw, 1.75rem) clamp(1rem, 0.5rem + 2.4vw, 2.5rem);
+  border-radius: var(--logo-bar-radius, 30px);
+  background: var(--logo-bar-background, #fff);
+  color: var(--logo-bar-text, #121212);
+  overflow: hidden;
+}
+
+.logo-bar__eyebrow {
+  flex: 0 0 auto;
+  margin: 0;
+  font-size: clamp(0.5rem, 0.44rem + 0.26vw, 0.6875rem);
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.logo-bar__viewport {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: var(--logo-bar-gap);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.logo-bar__track {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--logo-bar-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.logo-bar__item {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.logo-bar__link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logo-bar__link:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* Height is fixed and width is intrinsic, so logos of different aspect ratios
+   sit on a common optical baseline without being distorted. */
+.logo-bar__image {
+  display: block;
+  height: var(--logo-bar-logo-height, 26px);
+  width: auto;
+  max-width: none;
+  object-fit: contain;
+}
+
+/* Marquee
+   ------------------------------------------------------------------
+   Only transform is animated, so this stays off the main thread and never
+   triggers layout. The clone track supplies the second copy that makes the
+   loop seamless. */
+
+@keyframes logo-bar-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(calc(-100% - var(--logo-bar-gap)), 0, 0);
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .logo-bar--marquee .logo-bar__track {
+    animation: logo-bar-scroll var(--logo-bar-duration, 30s) linear infinite;
+  }
+
+  /* Pausing on hover and on keyboard focus gives anyone who needs longer a way
+     to actually read a logo. */
+  .logo-bar--marquee .logo-bar__viewport:hover .logo-bar__track,
+  .logo-bar--marquee .logo-bar__viewport:focus-within .logo-bar__track {
+    animation-play-state: paused;
+  }
+}
+
+/* Desktop: the row wraps and centres, and the clone is not rendered at all. */
+@media screen and (min-width: 750px) {
+  .logo-bar__viewport {
+    overflow: visible;
+    justify-content: center;
+  }
+
+  .logo-bar__track {
+    flex: 0 1 auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: clamp(0.75rem, 0.5rem + 1vw, 1.25rem);
+  }
+
+  .logo-bar__track--clone {
+    display: none;
+  }
+}
+
+/* Reduced motion: a manual scroller rather than a stopped animation, so the
+   content beyond the fold is still reachable. */
+@media (prefers-reduced-motion: reduce) {
+  .logo-bar--marquee .logo-bar__track {
+    animation: none;
+  }
+
+  .logo-bar__track--clone {
+    display: none;
+  }
+
+  .logo-bar__viewport {
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+
+  .logo-bar__item {
+    scroll-snap-align: center;
+  }
+}

@@ -1,0 +1,247 @@
+{{ 'section-logo-bar.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign marquee = false
+  if section.settings.enable_marquee_mobile and section.blocks.size > 1
+    assign marquee = true
+  endif
+-%}
+
+<div
+  class="logo-bar{% if marquee %} logo-bar--marquee{% endif %}"
+  style="
+    --logo-bar-background: {{ section.settings.card_background }};
+    --logo-bar-text: {{ section.settings.text_color }};
+    --logo-bar-radius: {{ section.settings.card_radius }}px;
+    --logo-bar-logo-height: {{ section.settings.logo_height }}px;
+    --logo-bar-duration: {{ section.settings.marquee_speed }}s;
+    --logo-bar-padding-top: {{ section.settings.padding_top }}px;
+    --logo-bar-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="logo-bar__card">
+    {%- comment -%}
+      The eyebrow is a paragraph, not a heading. It labels a list of logos
+      rather than opening a section of content, and promoting it to a heading
+      would inject a meaningless entry into the document outline.
+    {%- endcomment -%}
+    {%- if section.settings.eyebrow_text != blank -%}
+      <p class="logo-bar__eyebrow" id="LogoBarLabel-{{ section.id }}">
+        {{- section.settings.eyebrow_text | escape -}}
+      </p>
+    {%- endif -%}
+
+    <div class="logo-bar__viewport">
+      <ul
+        class="logo-bar__track"
+        role="list"
+        {% if section.settings.eyebrow_text != blank %}
+          aria-labelledby="LogoBarLabel-{{ section.id }}"
+        {% endif %}
+      >
+        {%- for block in section.blocks -%}
+          <li class="logo-bar__item" {{ block.shopify_attributes }}>
+            {%- if block.settings.image != blank -%}
+              {%- capture logo_image -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 400
+                  | image_tag:
+                    class: 'logo-bar__image',
+                    loading: 'lazy',
+                    widths: '100, 200, 300, 400',
+                    sizes: '160px',
+                    alt: block.settings.image_alt
+                }}
+              {%- endcapture -%}
+
+              {%- if block.settings.link != blank -%}
+                <a class="logo-bar__link" href="{{ block.settings.link }}">{{ logo_image }}</a>
+              {%- else -%}
+                {{ logo_image }}
+              {%- endif -%}
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      {%- comment -%}
+        A CSS marquee needs the sequence twice to loop without a visible gap.
+        This copy is inert to assistive technology and removed from the tab
+        order, so each logo is still announced and focusable exactly once. It
+        is not a second responsive variant of the content: the visible list
+        above is the same markup at every width.
+      {%- endcomment -%}
+      {%- if marquee -%}
+        <ul class="logo-bar__track logo-bar__track--clone" aria-hidden="true" role="presentation">
+          {%- for block in section.blocks -%}
+            <li class="logo-bar__item">
+              {%- if block.settings.image != blank -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 400
+                  | image_tag:
+                    class: 'logo-bar__image',
+                    loading: 'lazy',
+                    widths: '100, 200, 300, 400',
+                    sizes: '160px',
+                    alt: ''
+                }}
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Logo bar",
+  "tag": "section",
+  "class": "section-logo-bar",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow_text",
+      "label": "Eyebrow text",
+      "default": "AS SEEN ON",
+      "info": "Renders as a paragraph, not a heading, so it stays out of the page outline."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text and logo colour",
+      "default": "#121212"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card corner radius",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "label": "Logo height",
+      "min": 16,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 26
+    },
+    {
+      "type": "header",
+      "content": "Small screens"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_marquee_mobile",
+      "label": "Scroll logos on small screens",
+      "default": true,
+      "info": "Turned off, the logos wrap onto multiple lines instead. Visitors who prefer reduced motion always get a manual scroller."
+    },
+    {
+      "type": "range",
+      "id": "marquee_speed",
+      "label": "Scroll duration",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "s",
+      "default": 30,
+      "info": "Longer is slower."
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Logo"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Alt text",
+          "info": "Name the publication, for example \"Forbes\". Leave empty only if the logo is purely decorative."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link",
+          "info": "Optional. Links to the coverage."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Logo bar",
+      "blocks": [
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
