@@ -9,7 +9,7 @@
         "badge_alt": "Nomads Nation Best Tote 2025",
         "rating_value": 4.8,
         "rating_text": "<strong>4.8</strong> stars • <strong>200k+</strong> customers",
-        "heading": "Extreme <em>practicality</em>",
+        "heading": "Extreme practicality",
         "heading_tag": "h1",
         "subheading": "Zero bulk, Maximum Carry.",
         "cta_text": "Get Nanobag",
@@ -19,7 +19,8 @@
         "mobile_alignment": "center",
         "mobile_media_ratio": "3 / 4",
         "card_background": "#ffffff",
-        "card_text_color": "#121212"
+        "card_text_color": "#121212",
+        "overlay_text_color": "#ffffff"
       }
     },
     "logo_bar": {

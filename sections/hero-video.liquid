@@ -38,6 +38,7 @@
     --hero-mobile-ratio: {{ section.settings.mobile_media_ratio }};
     --hero-card-background: {{ section.settings.card_background }};
     --hero-card-text: {{ section.settings.card_text_color }};
+    --hero-overlay-text: {{ section.settings.overlay_text_color }};
   "
 >
   <div class="hero-video__media">
@@ -289,8 +290,8 @@
       "type": "inline_richtext",
       "id": "heading",
       "label": "Heading",
-      "default": "Extreme <em>practicality</em>",
-      "info": "Wrap a word in italics to match the design."
+      "default": "Extreme practicality",
+      "info": "Wrap a word in italics if you want the accent treatment."
     },
     {
       "type": "select",
@@ -342,6 +343,13 @@
     {
       "type": "header",
       "content": "Layout"
+    },
+    {
+      "type": "color",
+      "id": "overlay_text_color",
+      "label": "Desktop copy colour",
+      "default": "#ffffff",
+      "info": "Used where the copy sits over the video."
     },
     {
       "type": "color",

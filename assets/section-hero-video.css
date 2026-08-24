@@ -15,6 +15,10 @@
   --hero-card-radius: clamp(1.25rem, 0.9rem + 1.5vw, 2rem);
   --hero-card-overlap: clamp(1.5rem, 1rem + 2.2vw, 2.75rem);
 
+  /* One inherited property carries the copy colour to every descendant, so
+     the mobile card and the desktop overlay cannot disagree. */
+  --hero-copy-color: var(--hero-card-text, #121212);
+
   position: relative;
   display: grid;
   isolation: isolate;
@@ -75,7 +79,7 @@
   border-start-start-radius: var(--hero-card-radius);
   border-start-end-radius: var(--hero-card-radius);
   background: var(--hero-card-background, #fff);
-  color: var(--hero-card-text, #121212);
+  color: var(--hero-copy-color);
 }
 
 .hero-video__content {
@@ -226,6 +230,7 @@
 @media screen and (min-width: 750px) {
   .hero-video {
     min-height: var(--hero-height, 90vh);
+    --hero-copy-color: var(--hero-overlay-text, #fff);
   }
 
   .hero-video__media {
@@ -240,7 +245,6 @@
     padding-block: clamp(3rem, 2rem + 4vw, 6rem);
     border-radius: 0;
     background: none;
-    color: #fff;
   }
 
   .hero-video__badge {
