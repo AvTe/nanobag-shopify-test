@@ -4,7 +4,23 @@
   assign overlay_alpha = section.settings.overlay_opacity | divided_by: 100.0
   assign heading_tag = section.settings.heading_tag | default: 'h1'
   assign cta_url = section.settings.cta_link | default: routes.all_products_collection_url
+
+  # Shopify generates a preview image for every uploaded video, so a poster is
+  # never mandatory. An explicit poster still wins where the merchant wants a
+  # different frame or a different crop.
+  assign desktop_poster = section.settings.poster_image | default: section.settings.video_desktop.preview_image
+  assign mobile_poster = section.settings.poster_image_mobile | default: section.settings.video_mobile.preview_image
+  assign mobile_poster = mobile_poster | default: desktop_poster
+
+  assign has_video = false
+  if section.settings.video_desktop != blank or section.settings.video_mobile != blank
+    assign has_video = true
+  endif
 -%}
+
+{%- if has_video -%}
+  <script src="{{ 'hero-video.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
 
 {%- comment -%}
   The overlay opacity, colour and section height are the only values that cannot
@@ -19,46 +35,86 @@
     --hero-height: {{ section.settings.section_height }}vh;
     --hero-cta-background: {{ section.settings.cta_background }};
     --hero-cta-text: {{ section.settings.cta_text_color }};
+    --hero-mobile-ratio: {{ section.settings.mobile_media_ratio }};
+    --hero-card-background: {{ section.settings.card_background }};
+    --hero-card-text: {{ section.settings.card_text_color }};
   "
 >
   <div class="hero-video__media">
     {%- comment -%}
-      The poster is the LCP element: eager, high priority, responsive. It is
-      decorative, so alt is intentionally empty. The heading carries the meaning.
+      The poster is the LCP element: eager, high priority, responsive. A
+      <picture> swaps the crop at the breakpoint natively, which keeps this to
+      one element and no JavaScript. It is decorative, so alt is intentionally
+      empty: the heading carries the meaning.
     {%- endcomment -%}
-    {%- if section.settings.poster_image != blank -%}
-      {{
-        section.settings.poster_image
-        | image_url: width: 1920
-        | image_tag:
-          class: 'hero-video__poster',
-          loading: 'eager',
-          fetchpriority: 'high',
-          sizes: '100vw',
-          widths: '640, 960, 1280, 1600, 1920',
-          alt: ''
-      }}
+    {%- if desktop_poster != blank -%}
+      <picture class="hero-video__picture">
+        {%- if mobile_poster != desktop_poster -%}
+          <source
+            media="(max-width: 749px)"
+            srcset="
+              {{ mobile_poster | image_url: width: 600 }} 600w,
+              {{ mobile_poster | image_url: width: 900 }} 900w,
+              {{ mobile_poster | image_url: width: 1200 }} 1200w
+            "
+            sizes="100vw"
+          >
+        {%- endif -%}
+        {{
+          desktop_poster
+          | image_url: width: 1920
+          | image_tag:
+            class: 'hero-video__poster',
+            loading: 'eager',
+            fetchpriority: 'high',
+            sizes: '100vw',
+            widths: '640, 960, 1280, 1600, 1920',
+            alt: ''
+        }}
+      </picture>
     {%- endif -%}
 
     {%- comment -%}
+      Each video sits in an inert <template>, so only the one matching the
+      viewport is ever fetched. See assets/hero-video.js.
+
       image_size is deliberately omitted so Shopify emits no poster attribute on
       the video. The video then paints transparent until its first frame, which
-      lets the responsive poster image above show through underneath. That keeps
-      the img as the true LCP candidate, avoids downloading a second poster, and
-      needs no JavaScript to cross-fade.
+      lets the poster image show through underneath, with no cross-fade script.
     {%- endcomment -%}
-    {%- if section.settings.hero_video != blank -%}
-      {{
-        section.settings.hero_video
-        | video_tag:
-          class: 'hero-video__media-video',
-          autoplay: true,
-          loop: true,
-          muted: true,
-          controls: false,
-          playsinline: true,
-          preload: 'metadata'
-      }}
+    {%- if has_video -%}
+      <responsive-video class="hero-video__player" data-breakpoint="750">
+        {%- if section.settings.video_mobile != blank -%}
+          <template data-viewport="mobile">
+            {{
+              section.settings.video_mobile
+              | video_tag:
+                class: 'hero-video__media-video',
+                autoplay: true,
+                loop: true,
+                muted: true,
+                controls: false,
+                playsinline: true,
+                preload: 'metadata'
+            }}
+          </template>
+        {%- endif -%}
+        {%- if section.settings.video_desktop != blank -%}
+          <template data-viewport="desktop">
+            {{
+              section.settings.video_desktop
+              | video_tag:
+                class: 'hero-video__media-video',
+                autoplay: true,
+                loop: true,
+                muted: true,
+                controls: false,
+                playsinline: true,
+                preload: 'metadata'
+            }}
+          </template>
+        {%- endif -%}
+      </responsive-video>
     {%- endif -%}
 
     <div class="hero-video__overlay" aria-hidden="true"></div>
@@ -107,21 +163,39 @@
   "tag": "section",
   "class": "section-hero-video",
   "disabled_on": {
-    "groups": ["header", "footer"]
+    "groups": [
+      "header",
+      "footer"
+    ]
   },
   "settings": [
-    { "type": "header", "content": "Media" },
+    {
+      "type": "header",
+      "content": "Media"
+    },
     {
       "type": "video",
-      "id": "hero_video",
-      "label": "Background video",
-      "info": "Muted and looping. Leave empty to show the poster image only."
+      "id": "video_desktop",
+      "label": "Desktop background video",
+      "info": "Shown at 750px and wider. Muted and looping."
+    },
+    {
+      "type": "video",
+      "id": "video_mobile",
+      "label": "Mobile background video",
+      "info": "Shown below 750px. Only the matching video is downloaded, so keep this file small."
     },
     {
       "type": "image_picker",
       "id": "poster_image",
-      "label": "Poster image",
-      "info": "Shown before the video loads and to visitors who prefer reduced motion. Required."
+      "label": "Desktop poster image",
+      "info": "Optional. Falls back to the desktop video's own preview image."
+    },
+    {
+      "type": "image_picker",
+      "id": "poster_image_mobile",
+      "label": "Mobile poster image",
+      "info": "Optional. Use a portrait crop. Falls back to the mobile video's preview image, then the desktop poster."
     },
     {
       "type": "range",
@@ -150,9 +224,40 @@
       "unit": "vh",
       "default": 90
     },
-
-    { "type": "header", "content": "Badge and rating" },
-    { "type": "image_picker", "id": "badge_image", "label": "Award badge" },
+    {
+      "type": "select",
+      "id": "mobile_media_ratio",
+      "label": "Mobile media shape",
+      "options": [
+        {
+          "value": "3 / 4",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "4 / 5",
+          "label": "Tall portrait (4:5)"
+        },
+        {
+          "value": "1 / 1",
+          "label": "Square"
+        },
+        {
+          "value": "16 / 9",
+          "label": "Landscape (16:9)"
+        }
+      ],
+      "default": "3 / 4",
+      "info": "Height of the media on small screens, where the copy sits in a card below it."
+    },
+    {
+      "type": "header",
+      "content": "Badge and rating"
+    },
+    {
+      "type": "image_picker",
+      "id": "badge_image",
+      "label": "Award badge"
+    },
     {
       "type": "text",
       "id": "badge_alt",
@@ -176,21 +281,30 @@
       "default": "<strong>4.8</strong> stars • <strong>200k+</strong> customers",
       "info": "Bold the numbers to match the design."
     },
-
-    { "type": "header", "content": "Content" },
+    {
+      "type": "header",
+      "content": "Content"
+    },
     {
       "type": "inline_richtext",
       "id": "heading",
       "label": "Heading",
-      "default": "Extreme practicality"
+      "default": "Extreme <em>practicality</em>",
+      "info": "Wrap a word in italics to match the design."
     },
     {
       "type": "select",
       "id": "heading_tag",
       "label": "Heading level",
       "options": [
-        { "value": "h1", "label": "H1" },
-        { "value": "h2", "label": "H2" }
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        }
       ],
       "default": "h1",
       "info": "Use H1 only when this section is the top of the page. One H1 per page."
@@ -225,15 +339,35 @@
       "label": "Button text",
       "default": "#ffffff"
     },
-
-    { "type": "header", "content": "Layout" },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Mobile card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "Mobile card text",
+      "default": "#121212"
+    },
     {
       "type": "select",
       "id": "content_alignment",
       "label": "Desktop content position",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Centre" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Centre"
+        }
       ],
       "default": "left"
     },
@@ -242,12 +376,22 @@
       "id": "mobile_alignment",
       "label": "Mobile content position",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Centre" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Centre"
+        }
       ],
       "default": "center"
     }
   ],
-  "presets": [{ "name": "Hero video" }]
+  "presets": [
+    {
+      "name": "Hero video"
+    }
+  ]
 }
 {% endschema %}

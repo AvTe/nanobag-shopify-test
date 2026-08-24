@@ -1,40 +1,32 @@
 /*
   Hero video
   ----------
-  One markup tree at every viewport. Sizing is fluid via clamp() rather than
-  swapped at breakpoints, so the layout has no jump points between 320px and
-  2560px. The only media query is prefers-reduced-motion.
+  Mobile first. The two frames are not the same layout at two sizes: on mobile
+  the copy sits in a white card below the media, on desktop it is overlaid on
+  the media. That is a genuine structural reflow, so it earns the one media
+  query in this file.
+
+  It is still a single markup tree. The reflow is done by moving the media and
+  the content into the same grid cell at the desktop breakpoint rather than by
+  rendering the block twice. Everything else scales with clamp().
 */
 
-.section-hero-video {
-  /* TODO(figma): confirm whether the page sits in an inset rounded frame.
-     If it does, set these two values; nothing else needs to change. */
-  --hero-inset: 0px;
-  --hero-radius: 0px;
-}
-
 .hero-video {
+  --hero-card-radius: clamp(1.25rem, 0.9rem + 1.5vw, 2rem);
+  --hero-card-overlap: clamp(1.5rem, 1rem + 2.2vw, 2.75rem);
+
   position: relative;
   display: grid;
-  min-height: var(--hero-height, 90vh);
-  margin-inline: var(--hero-inset);
-  border-radius: var(--hero-radius);
-  overflow: hidden;
   isolation: isolate;
 }
 
-/* Media and content occupy the same grid cell so the content stacks on top
-   without absolute positioning fighting the intrinsic height. */
-.hero-video__media,
-.hero-video__inner {
-  grid-area: 1 / 1;
-}
-
-/* Media layer
+/* Media
    ------------------------------------------------------------------ */
 
 .hero-video__media {
   position: relative;
+  grid-row: 1;
+  aspect-ratio: var(--hero-mobile-ratio, 3 / 4);
   overflow: hidden;
 }
 
@@ -65,37 +57,47 @@
   pointer-events: none;
 }
 
-/* Content layer
+/* Content
    ------------------------------------------------------------------ */
 
 .hero-video__inner {
   position: relative;
   z-index: 3;
+  grid-row: 2;
   display: flex;
-  align-items: center;
+  justify-content: center;
   width: 100%;
   max-width: var(--page-width, 1400px);
   margin-inline: auto;
-  /* TODO(figma): confirm container max-width and horizontal padding. */
+  margin-block-start: calc(-1 * var(--hero-card-overlap));
   padding-inline: clamp(1.25rem, 0.5rem + 4vw, 5rem);
-  padding-block: clamp(3rem, 2rem + 4vw, 6rem);
+  padding-block: clamp(1.5rem, 1rem + 3vw, 3rem);
+  border-start-start-radius: var(--hero-card-radius);
+  border-start-end-radius: var(--hero-card-radius);
+  background: var(--hero-card-background, #fff);
+  color: var(--hero-card-text, #121212);
 }
 
 .hero-video__content {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: clamp(0.75rem, 0.55rem + 0.85vw, 1.25rem);
   max-width: 36ch;
-  color: #fff;
-  text-align: left;
+  text-align: center;
   text-wrap: balance;
 }
 
+/* On mobile the badge floats over the media, clear of the card. It stays in
+   the content stack in the markup so the reading order is badge, rating,
+   heading, and only its painting position changes. */
 .hero-video__badge {
-  width: clamp(4.75rem, 3.9rem + 3.6vw, 7rem);
+  position: absolute;
+  z-index: 4;
+  inset-block-start: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+  inset-inline-end: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+  width: clamp(4.25rem, 3.4rem + 3.6vw, 6.5rem);
   height: auto;
-  margin-block-end: clamp(0.25rem, 0.1rem + 0.6vw, 0.75rem);
 }
 
 /* Rating
@@ -104,14 +106,12 @@
 .hero-video__rating {
   display: flex;
   align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 0.5em;
   margin: 0;
   font-size: clamp(0.8125rem, 0.74rem + 0.31vw, 1rem);
   line-height: 1.3;
-}
-
-.hero-video__rating-text {
-  letter-spacing: 0.01em;
 }
 
 .star-rating {
@@ -128,7 +128,8 @@
 }
 
 .star-rating__layer--track {
-  color: rgb(255 255 255 / 35%);
+  color: currentcolor;
+  opacity: 0.25;
 }
 
 /* Clipped to the rating percentage, which is why fractional ratings work
@@ -139,6 +140,7 @@
   inset-inline-start: 0;
   overflow: hidden;
   color: #f5b301;
+  opacity: 1;
 }
 
 .star-rating__star {
@@ -152,17 +154,26 @@
 
 .hero-video__heading {
   margin: 0;
-  /* TODO(figma): confirm family, weight and letter spacing from the inspect panel. */
-  font-size: clamp(2.75rem, 1.55rem + 5.1vw, 5rem);
+  font-size: clamp(2.25rem, 1.35rem + 3.85vw, 5rem);
   font-weight: 700;
-  line-height: 0.98;
+  line-height: 1;
   letter-spacing: -0.02em;
+}
+
+/* The design italicises the second word of the headline. inline_richtext lets
+   the merchant choose which word from the editor while the heading stays a
+   single semantic element. */
+.hero-video__heading em {
+  font-family: var(--hero-accent-font-family, inherit);
+  font-style: italic;
+  font-weight: var(--hero-accent-font-weight, 400);
 }
 
 .hero-video__subheading {
   margin: 0;
   font-size: clamp(0.9375rem, 0.86rem + 0.31vw, 1.125rem);
   line-height: 1.45;
+  opacity: 0.85;
 }
 
 /* Call to action
@@ -173,7 +184,7 @@
   align-items: center;
   justify-content: center;
   min-height: 2.75rem; /* 44px tap target */
-  margin-block-start: clamp(0.5rem, 0.3rem + 0.85vw, 1rem);
+  margin-block-start: clamp(0.25rem, 0.1rem + 0.6vw, 0.75rem);
   padding: clamp(0.75rem, 0.62rem + 0.53vw, 1rem) clamp(2rem, 1.4rem + 2.55vw, 3.25rem);
   border-radius: 999px;
   background: var(--hero-cta-background, #cc253e);
@@ -191,39 +202,57 @@
 }
 
 .hero-video__cta:focus-visible {
-  outline: 2px solid #fff;
+  outline: 2px solid currentcolor;
   outline-offset: 3px;
 }
 
-/* Alignment variants
-   ------------------------------------------------------------------ */
+/* Mobile content alignment. Declared before the desktop query so the desktop
+   rules win at wider viewports without any specificity escalation. */
 
-.hero-video--align-center .hero-video__inner {
-  justify-content: center;
+.hero-video--mobile-left .hero-video__content {
+  align-items: flex-start;
+  text-align: left;
 }
 
-.hero-video--align-center .hero-video__content {
-  align-items: center;
-  text-align: center;
+.hero-video--mobile-left .hero-video__rating {
+  justify-content: flex-start;
 }
 
-/* Mobile alignment is applied below the point where the content column stops
-   being narrower than the viewport, which is a genuine reflow, not a relayout. */
-@media screen and (max-width: 749px) {
-  .hero-video--mobile-center .hero-video__inner {
-    justify-content: center;
+/* Desktop reflow
+   ------------------------------------------------------------------
+   Media and content collapse into the same grid cell, the card styling is
+   dropped, and the copy sits over the video. */
+
+@media screen and (min-width: 750px) {
+  .hero-video {
+    min-height: var(--hero-height, 90vh);
   }
 
-  .hero-video--mobile-center .hero-video__content {
+  .hero-video__media {
+    grid-area: 1 / 1;
+    aspect-ratio: auto;
+  }
+
+  .hero-video__inner {
+    grid-area: 1 / 1;
     align-items: center;
-    text-align: center;
+    margin-block-start: 0;
+    padding-block: clamp(3rem, 2rem + 4vw, 6rem);
+    border-radius: 0;
+    background: none;
+    color: #fff;
   }
 
-  .hero-video--mobile-left .hero-video__inner {
+  .hero-video__badge {
+    position: static;
+    margin-block-end: clamp(0.25rem, 0.1rem + 0.6vw, 0.75rem);
+  }
+
+  .hero-video--align-left .hero-video__inner {
     justify-content: flex-start;
   }
 
-  .hero-video--mobile-left .hero-video__content {
+  .hero-video--align-left .hero-video__content {
     align-items: flex-start;
     text-align: left;
   }
@@ -244,4 +273,24 @@
   .hero-video__cta:hover {
     transform: none;
   }
+}
+
+/* Media swap wrappers
+   ------------------------------------------------------------------
+   <picture> and <responsive-video> are inline by default and would otherwise
+   not fill the media box. */
+
+.hero-video__picture,
+.hero-video__player {
+  display: block;
+  position: absolute;
+  inset: 0;
+}
+
+.hero-video__picture {
+  z-index: 0;
+}
+
+.hero-video__player {
+  z-index: 1;
 }

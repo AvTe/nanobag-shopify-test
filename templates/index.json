@@ -8,17 +8,22 @@
         "section_height": 90,
         "badge_alt": "Nomads Nation Best Tote 2025",
         "rating_value": 4.8,
-        "rating_text": "<strong>4.8<\/strong> stars • <strong>200k+<\/strong> customers",
-        "heading": "Extreme practicality",
+        "rating_text": "<strong>4.8</strong> stars • <strong>200k+</strong> customers",
+        "heading": "Extreme <em>practicality</em>",
         "heading_tag": "h1",
         "subheading": "Zero bulk, Maximum Carry.",
         "cta_text": "Get Nanobag",
         "cta_background": "#cc253e",
         "cta_text_color": "#ffffff",
         "content_alignment": "left",
-        "mobile_alignment": "center"
+        "mobile_alignment": "center",
+        "mobile_media_ratio": "3 / 4",
+        "card_background": "#ffffff",
+        "card_text_color": "#121212"
       }
     }
   },
-  "order": ["hero_video"]
+  "order": [
+    "hero_video"
+  ]
 }
