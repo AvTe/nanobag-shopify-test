@@ -1,25 +1,23 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "name": "t:sections.header.name",
   "type": "header",
   "sections": {
     "announcement-bar": {
       "type": "announcement-bar",
-      "settings": {
-        "color_scheme": "scheme-4",
-        "show_line_separator": false,
-        "show_social": true,
-        "auto_rotate": true,
-        "change_slides_speed": 5,
-        "enable_country_selector": true,
-        "enable_language_selector": false
-      },
       "blocks": {
         "announcement_1": {
           "type": "announcement",
           "settings": {
             "text": "Fast 2-4 Day Local Shipping",
-            "text_alignment": "center",
-            "color_scheme": "scheme-4",
             "link": ""
           }
         },
@@ -27,8 +25,6 @@
           "type": "announcement",
           "settings": {
             "text": "Free Shipping on Orders 3+ Bags",
-            "text_alignment": "center",
-            "color_scheme": "scheme-4",
             "link": ""
           }
         },
@@ -36,8 +32,6 @@
           "type": "announcement",
           "settings": {
             "text": "LIMITED SPECIAL - Details below",
-            "text_alignment": "center",
-            "color_scheme": "scheme-4",
             "link": ""
           }
         },
@@ -45,8 +39,6 @@
           "type": "announcement",
           "settings": {
             "text": "FREE GIFT OFFER - See below for details",
-            "text_alignment": "center",
-            "color_scheme": "scheme-4",
             "link": ""
           }
         },
@@ -54,8 +46,6 @@
           "type": "announcement",
           "settings": {
             "text": "One Tree Planted for Every Bag",
-            "text_alignment": "center",
-            "color_scheme": "scheme-4",
             "link": ""
           }
         }
@@ -66,28 +56,37 @@
         "announcement_3",
         "announcement_4",
         "announcement_5"
-      ]
+      ],
+      "settings": {
+        "auto_rotate": true,
+        "change_slides_speed": 5,
+        "color_scheme": "scheme-4",
+        "show_line_separator": false,
+        "show_social": true,
+        "enable_country_selector": true,
+        "enable_language_selector": false
+      }
     },
     "header": {
       "type": "header",
       "settings": {
-        "color_scheme": "scheme-1",
-        "menu_color_scheme": "scheme-1",
+        "transparent_header": "index",
+        "transparent_text_color": "#ffffff",
+        "show_search": false,
+        "transparent_scrim_opacity": 35,
         "logo_position": "middle-left",
+        "mobile_logo_position": "center",
         "menu": "main-menu",
         "menu_type_desktop": "dropdown",
         "sticky_header_type": "on-scroll-up",
         "show_line_separator": true,
+        "color_scheme": "scheme-1",
+        "menu_color_scheme": "scheme-1",
         "enable_country_selector": true,
         "enable_language_selector": true,
-        "mobile_logo_position": "center",
         "margin_bottom": 0,
         "padding_top": 20,
         "padding_bottom": 20,
-        "transparent_header": "index",
-        "transparent_text_color": "#ffffff",
-        "transparent_scrim_opacity": 35,
-        "show_search": false,
         "menu_alignment": "center",
         "logo_is_h1": false
       }
