@@ -9,7 +9,15 @@
   Badge    : one node, repositioned absolutely on mobile over the media
   Overlay  : opacity driven by a CSS custom property, 0 to 100 from the editor
 
-  No JavaScript. No external libraries.
+  Media art direction:
+  Poster uses <picture> with a media source, so the browser downloads exactly
+  one image. Video cannot do the same, because the `media` attribute on
+  <source> is only honoured inside <picture>, not <video>. A ~35 line custom
+  element resolves the correct source once and assigns it, so nothing is
+  fetched for the breakpoint you are not on, and nothing is fetched at all
+  under prefers-reduced-motion.
+
+  No libraries. Posters render without JS, so the section degrades cleanly.
   ---------------------------------------------------------------------------
 {%- endcomment -%}
 
@@ -27,10 +35,83 @@
 
   assign badge_desktop = s.badge_image_desktop | default: s.badge_image_mobile
   assign badge_mobile = s.badge_image_mobile | default: s.badge_image_desktop
+
+  comment
+    Posters. Each falls back to the other when only one is supplied.
+  endcomment
+  assign poster_desktop = s.poster_image | default: s.poster_image_mobile
+  assign poster_mobile = s.poster_image_mobile | default: s.poster_image
+
+  comment
+    Videos. Mobile falls back to the desktop video when not supplied.
+  endcomment
+  assign video_desktop = s.hero_video
+  assign video_mobile = s.hero_video_mobile | default: s.hero_video
+
+  assign mobile_cap = s.mobile_source_cap | plus: 0
+
+  comment
+    Resolve the largest mp4 rendition for desktop, and the largest rendition
+    at or below the cap for mobile. When only one video is supplied, this
+    alone saves a meaningful download on phones.
+  endcomment
+  assign desktop_src = ''
+  assign desktop_w = 0
+  if video_desktop != blank
+    for src in video_desktop.sources
+      if src.format == 'mp4' and src.width > desktop_w
+        assign desktop_w = src.width
+        assign desktop_src = src.url
+      endif
+    endfor
+  endif
+
+  assign mobile_src = ''
+  assign mobile_w = 0
+  if video_mobile != blank
+    for src in video_mobile.sources
+      if src.format == 'mp4' and src.width > mobile_w and src.width <= mobile_cap
+        assign mobile_w = src.width
+        assign mobile_src = src.url
+      endif
+    endfor
+
+    comment
+      Nothing under the cap: fall back to the smallest available rendition.
+    endcomment
+    if mobile_src == blank
+      assign smallest = 999999
+      for src in video_mobile.sources
+        if src.format == 'mp4' and src.width < smallest
+          assign smallest = src.width
+          assign mobile_src = src.url
+        endif
+      endfor
+    endif
+  endif
+
+  comment
+    Mobile media box. Either a fixed viewport height or the true aspect ratio
+    of the mobile asset, which matters when that footage is vertical.
+  endcomment
+  assign mobile_ratio = 0
+  if video_mobile != blank and video_mobile.aspect_ratio > 0
+    assign mobile_ratio = video_mobile.aspect_ratio
+  elsif poster_mobile != blank
+    assign mobile_ratio = poster_mobile.aspect_ratio
+  endif
+  if mobile_ratio == 0
+    assign mobile_ratio = 0.8
+  endif
+
+  assign has_video = false
+  if desktop_src != blank or mobile_src != blank
+    assign has_video = true
+  endif
 -%}
 
 <section
-  class="nb-hero nb-hero--align-{{ s.content_alignment }} nb-hero--m-align-{{ s.mobile_alignment }}{% if s.overlap_header %} nb-hero--overlap{% endif %}"
+  class="nb-hero nb-hero--align-{{ s.content_alignment }} nb-hero--m-align-{{ s.mobile_alignment }} nb-hero--m-size-{{ s.mobile_media_sizing }}{% if s.overlap_header %} nb-hero--overlap{% endif %}"
   style="
     --nb-overlay-color: {{ s.overlay_color }};
     --nb-overlay-opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
@@ -40,41 +121,88 @@
     --nb-star: {{ s.star_color }};
     --nb-h-desktop: {{ s.height_desktop }}svh;
     --nb-media-h-mobile: {{ s.height_mobile }}svh;
+    --nb-media-ratio-mobile: {{ mobile_ratio }};
     --nb-header-h: {{ s.header_height }}px;
     --nb-panel-radius: {{ s.panel_radius }}px;
     --nb-heading-measure: {{ s.heading_measure }}ch;
+    --nb-focal: {{ s.focal_x }}% {{ s.focal_y }}%;
+    --nb-focal-m: {{ s.focal_x_mobile }}% {{ s.focal_y_mobile }}%;
   "
 >
   <div class="nb-hero__media">
-    {%- if s.poster_image != blank -%}
-      {{
-        s.poster_image
-        | image_url: width: 1920
-        | image_tag:
-          class: 'nb-hero__poster',
-          loading: 'eager',
-          fetchpriority: 'high',
-          decoding: 'sync',
-          sizes: '100vw',
-          widths: '480, 640, 768, 960, 1200, 1440, 1680, 1920',
-          alt: ''
-      }}
+    {%- if poster_desktop != blank or poster_mobile != blank -%}
+      <picture class="nb-hero__poster-wrap">
+        {%- if poster_desktop != blank -%}
+          <source
+            media="(min-width: 750px)"
+            srcset="
+              {{ poster_desktop | image_url: width: 960 }} 960w,
+              {{ poster_desktop | image_url: width: 1200 }} 1200w,
+              {{ poster_desktop | image_url: width: 1440 }} 1440w,
+              {{ poster_desktop | image_url: width: 1680 }} 1680w,
+              {{ poster_desktop | image_url: width: 1920 }} 1920w,
+              {{ poster_desktop | image_url: width: 2400 }} 2400w
+            "
+            sizes="100vw"
+            width="{{ poster_desktop.width }}"
+            height="{{ poster_desktop.height }}"
+          >
+        {%- endif -%}
+        <img
+          class="nb-hero__poster"
+          src="{{ poster_mobile | image_url: width: 900 }}"
+          srcset="
+            {{ poster_mobile | image_url: width: 480 }} 480w,
+            {{ poster_mobile | image_url: width: 640 }} 640w,
+            {{ poster_mobile | image_url: width: 828 }} 828w,
+            {{ poster_mobile | image_url: width: 1080 }} 1080w,
+            {{ poster_mobile | image_url: width: 1400 }} 1400w
+          "
+          sizes="100vw"
+          width="{{ poster_mobile.width }}"
+          height="{{ poster_mobile.height }}"
+          alt=""
+          loading="eager"
+          fetchpriority="high"
+          decoding="sync"
+        >
+      </picture>
     {%- endif -%}
 
-    {%- if s.hero_video != blank -%}
-      {{
-        s.hero_video
-        | video_tag:
-          class: 'nb-hero__video',
-          image_size: '1920x',
-          autoplay: true,
-          loop: true,
-          muted: true,
-          controls: false,
-          playsinline: true,
-          preload: 'metadata',
-          tabindex: '-1'
-      }}
+    {%- if has_video -%}
+      <nb-responsive-video
+        class="nb-hero__video-host"
+        data-desktop-src="{{ desktop_src | escape }}"
+        data-mobile-src="{{ mobile_src | escape }}"
+        data-breakpoint="750"
+      >
+        <video
+          class="nb-hero__video"
+          autoplay
+          muted
+          loop
+          playsinline
+          disablepictureinpicture
+          disableremoteplayback
+          preload="none"
+          tabindex="-1"
+          aria-hidden="true"
+        ></video>
+      </nb-responsive-video>
+
+      <noscript>
+        <video
+          class="nb-hero__video nb-hero__video--noscript"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          tabindex="-1"
+          aria-hidden="true"
+          src="{{ desktop_src | default: mobile_src }}"
+        ></video>
+      </noscript>
     {%- endif -%}
 
     <div class="nb-hero__overlay" aria-hidden="true"></div>
@@ -177,21 +305,35 @@
     grid-template-columns: 1fr;
     position: relative;
     isolation: isolate;
-    background: var(--nb-panel-bg, #fff);
+    background: #fff;
   }
 
   .nb-hero--overlap {
     margin-top: calc(-1 * var(--nb-header-h, 0px));
   }
 
-  /* ---------- Media --------------------------------------------------- */
+  /* ---------- Media ---------------------------------------------------- */
 
   .nb-hero__media {
     grid-area: media;
     position: relative;
     overflow: hidden;
+    background: #0d0d0d;
+  }
+
+  .nb-hero--m-size-fixed .nb-hero__media {
     height: var(--nb-media-h-mobile, 46svh);
-    min-height: 18rem;
+    min-height: 17rem;
+  }
+
+  /* Vertical mobile footage: reserve the real box so there is zero CLS. */
+  .nb-hero--m-size-ratio .nb-hero__media {
+    aspect-ratio: var(--nb-media-ratio-mobile, 0.8);
+    max-height: 78svh;
+  }
+
+  .nb-hero__poster-wrap {
+    display: contents;
   }
 
   .nb-hero__poster,
@@ -201,7 +343,13 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: var(--nb-focal, 50% 50%);
+    object-position: var(--nb-focal-m, 50% 50%);
+    display: block;
+  }
+
+  .nb-hero__video-host {
+    position: absolute;
+    inset: 0;
     display: block;
   }
 
@@ -209,6 +357,14 @@
     z-index: 1;
     border: 0;
     pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  /* Revealed only once a frame is decodable, so the poster is never replaced
+     by a black box mid-load. */
+  nb-responsive-video[data-ready='true'] .nb-hero__video {
+    opacity: 1;
   }
 
   .nb-hero__overlay {
@@ -216,11 +372,11 @@
     inset: 0;
     z-index: 2;
     background: var(--nb-overlay-color, #000);
-    opacity: var(--nb-overlay-opacity-m, 0.25);
+    opacity: var(--nb-overlay-opacity-m, 0.2);
     pointer-events: none;
   }
 
-  /* ---------- Panel --------------------------------------------------- */
+  /* ---------- Panel ---------------------------------------------------- */
 
   .nb-hero__panel {
     grid-area: panel;
@@ -252,9 +408,9 @@
     text-align: start;
   }
 
-  /* ---------- Badge ---------------------------------------------------- */
-  /* One node. On mobile it is lifted out of the panel and floated over the
-     media. On desktop it returns to normal flow at the top of the stack. */
+  /* ---------- Badge ----------------------------------------------------- */
+  /* One node. Lifted out of the panel over the media on mobile, back into
+     normal flow on desktop. */
 
   .nb-hero__badge {
     position: absolute;
@@ -272,7 +428,7 @@
     display: block;
   }
 
-  /* ---------- Rating --------------------------------------------------- */
+  /* ---------- Rating ----------------------------------------------------- */
 
   .nb-hero__rating {
     display: flex;
@@ -325,7 +481,7 @@
     font-weight: 600;
   }
 
-  /* ---------- Heading -------------------------------------------------- */
+  /* ---------- Heading ---------------------------------------------------- */
 
   .nb-hero__heading {
     margin: 0;
@@ -340,7 +496,7 @@
   }
 
   /* Mobile design mixes a bold grotesk with an italic serif.
-     Merchant controls which word by wrapping it in the editor. */
+     Merchant chooses the word by italicising it in the editor. */
   .nb-hero__heading em,
   .nb-hero__heading i {
     font-family: var(--nb-serif, 'Playfair Display', Georgia, 'Times New Roman', serif);
@@ -349,7 +505,7 @@
     letter-spacing: -0.01em;
   }
 
-  /* ---------- Subheading ----------------------------------------------- */
+  /* ---------- Subheading -------------------------------------------------- */
 
   .nb-hero__subheading {
     margin: 0;
@@ -363,7 +519,7 @@
     display: none;
   }
 
-  /* ---------- CTA ------------------------------------------------------- */
+  /* ---------- CTA --------------------------------------------------------- */
 
   .nb-hero__cta {
     display: inline-flex;
@@ -420,9 +576,17 @@
       grid-area: stack;
     }
 
-    .nb-hero__media {
+    .nb-hero--m-size-fixed .nb-hero__media,
+    .nb-hero--m-size-ratio .nb-hero__media {
       height: 100%;
       min-height: 0;
+      aspect-ratio: auto;
+      max-height: none;
+    }
+
+    .nb-hero__poster,
+    .nb-hero__video {
+      object-position: var(--nb-focal, 50% 50%);
     }
 
     .nb-hero__overlay {
@@ -440,7 +604,7 @@
       pointer-events: none;
     }
 
-    /* Re-enable pointing only on the things you can actually click */
+    /* Re-enable pointing only on what is actually clickable */
     .nb-hero__panel a,
     .nb-hero__panel button {
       pointer-events: auto;
@@ -463,7 +627,6 @@
       max-width: 60rem;
     }
 
-    /* Badge returns to flow */
     .nb-hero__badge {
       position: static;
       width: clamp(6rem, 3rem + 7vw, 9.25rem);
@@ -481,8 +644,8 @@
       color: #fff;
     }
 
-    /* Desktop headline is a single typeface. Neutralise the serif italic
-       so the same editor value renders correctly in both layouts. */
+    /* Desktop headline is a single typeface. Neutralise the serif italic so
+       the same editor value renders correctly in both layouts. */
     .nb-hero__heading em,
     .nb-hero__heading i {
       font-family: inherit;
@@ -517,8 +680,6 @@
     }
   }
 
-  /* Wide desktop: keep content aligned to a centred container instead of
-     drifting to the far edge of ultrawide screens. */
   @media screen and (min-width: 1600px) {
     .nb-hero__inner {
       max-width: 90rem;
@@ -527,11 +688,12 @@
   }
 
   /* =========================================================================
-     Motion and forced-colours
+     Motion and forced colours
      ========================================================================= */
 
   @media (prefers-reduced-motion: reduce) {
-    .nb-hero__video {
+    .nb-hero__video,
+    .nb-hero__video-host {
       display: none;
     }
 
@@ -551,24 +713,175 @@
   }
 {% endstylesheet %}
 
+{% javascript %}
+  /**
+   * <nb-responsive-video>
+   *
+   * Assigns one video source based on the viewport. The `media` attribute on
+   * <source> is only honoured inside <picture>, so <video> cannot art-direct
+   * declaratively. This resolves it once, swaps on a real breakpoint cross,
+   * and skips loading entirely when reduced motion is requested.
+   */
+  if (!customElements.get('nb-responsive-video')) {
+    customElements.define(
+      'nb-responsive-video',
+      class NbResponsiveVideo extends HTMLElement {
+        connectedCallback() {
+          this.video = this.querySelector('video');
+          if (!this.video) return;
+
+          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+          const bp = parseInt(this.dataset.breakpoint, 10) || 750;
+          this.mq = window.matchMedia('(min-width: ' + bp + 'px)');
+
+          this.markReady = () => {
+            this.dataset.ready = 'true';
+          };
+          this.video.addEventListener('loadeddata', this.markReady);
+
+          this.onChange = () => this.apply();
+          this.mq.addEventListener('change', this.onChange);
+
+          this.apply();
+        }
+
+        disconnectedCallback() {
+          if (this.mq && this.onChange) this.mq.removeEventListener('change', this.onChange);
+          if (this.video && this.markReady) this.video.removeEventListener('loadeddata', this.markReady);
+        }
+
+        apply() {
+          const wanted = this.mq.matches
+            ? this.dataset.desktopSrc || this.dataset.mobileSrc
+            : this.dataset.mobileSrc || this.dataset.desktopSrc;
+
+          if (!wanted || this.current === wanted) return;
+          this.current = wanted;
+
+          this.video.src = wanted;
+          this.video.load();
+
+          const started = this.video.play();
+          if (started && typeof started.catch === 'function') {
+            // Autoplay can be refused (low power mode, data saver).
+            // The poster stays visible, so there is nothing to recover from.
+            started.catch(function () {});
+          }
+        }
+      }
+    );
+  }
+{% endjavascript %}
+
 {% schema %}
 {
   "name": "Hero video",
   "tag": "section",
   "class": "section-nb-hero",
   "settings": [
-    { "type": "header", "content": "Media" },
+    { "type": "header", "content": "Desktop media" },
     {
       "type": "video",
       "id": "hero_video",
-      "label": "Background video"
+      "label": "Background video (desktop)"
     },
     {
       "type": "image_picker",
       "id": "poster_image",
-      "label": "Poster image",
-      "info": "Shown instantly before the video paints, and to visitors who prefer reduced motion. Strongly recommended: this is the LCP element."
+      "label": "Poster image (desktop)",
+      "info": "Paints instantly before the video loads. This is the LCP element, so always set one."
     },
+    {
+      "type": "range",
+      "id": "focal_x",
+      "label": "Focal point X (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "focal_y",
+      "label": "Focal point Y (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 50
+    },
+
+    { "type": "header", "content": "Mobile media" },
+    {
+      "type": "video",
+      "id": "hero_video_mobile",
+      "label": "Background video (mobile)",
+      "info": "Optional. Leave empty to reuse the desktop video at a smaller rendition."
+    },
+    {
+      "type": "image_picker",
+      "id": "poster_image_mobile",
+      "label": "Poster image (mobile)",
+      "info": "Optional. Leave empty to reuse the desktop poster."
+    },
+    {
+      "type": "select",
+      "id": "mobile_media_sizing",
+      "label": "Mobile media sizing",
+      "options": [
+        { "value": "fixed", "label": "Fixed height" },
+        { "value": "ratio", "label": "Match video aspect ratio" }
+      ],
+      "default": "fixed",
+      "info": "Choose aspect ratio when the mobile video is vertical, so nothing is cropped."
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Media height (mobile)",
+      "min": 30,
+      "max": 80,
+      "step": 2,
+      "unit": "vh",
+      "default": 46,
+      "info": "Used only with fixed height sizing."
+    },
+    {
+      "type": "range",
+      "id": "focal_x_mobile",
+      "label": "Focal point X (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "focal_y_mobile",
+      "label": "Focal point Y (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 40
+    },
+    {
+      "type": "select",
+      "id": "mobile_source_cap",
+      "label": "Max mobile video width",
+      "options": [
+        { "value": "720", "label": "720 px" },
+        { "value": "1080", "label": "1080 px" },
+        { "value": "1440", "label": "1440 px" }
+      ],
+      "default": "1080",
+      "info": "Caps which rendition phones download. Lower is faster."
+    },
+
+    { "type": "header", "content": "Overlay" },
     {
       "type": "color",
       "id": "overlay_color",
@@ -594,8 +907,10 @@
       "step": 5,
       "unit": "%",
       "default": 20,
-      "info": "Mobile text sits on the white card, so the media usually needs less dimming."
+      "info": "Mobile copy sits on the white card, so the media usually needs less dimming."
     },
+
+    { "type": "header", "content": "Layout" },
     {
       "type": "range",
       "id": "height_desktop",
@@ -607,14 +922,51 @@
       "default": 88
     },
     {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content position (desktop)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Centre" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "mobile_alignment",
+      "label": "Content position (mobile)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Centre" }
+      ],
+      "default": "center"
+    },
+    {
       "type": "range",
-      "id": "height_mobile",
-      "label": "Media height (mobile)",
-      "min": 30,
-      "max": 80,
+      "id": "panel_radius",
+      "label": "Mobile card corner radius",
+      "min": 0,
+      "max": 48,
       "step": 2,
-      "unit": "vh",
-      "default": 46
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "checkbox",
+      "id": "overlap_header",
+      "label": "Extend behind transparent header",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "header_height",
+      "label": "Header height",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 88,
+      "info": "Pulls the section up behind a transparent header and pads the content clear of it."
     },
 
     { "type": "header", "content": "Badge" },
@@ -672,7 +1024,7 @@
       "id": "heading",
       "label": "Heading",
       "default": "Extreme <em>practicality</em>",
-      "info": "Wrap a word in italics to render it in the serif face on mobile. Desktop renders the whole heading in one typeface."
+      "info": "Italicise a word to render it in the serif face on mobile. Desktop renders the whole heading in one typeface."
     },
     {
       "type": "select",
@@ -694,7 +1046,7 @@
       "step": 1,
       "unit": "ch",
       "default": 14,
-      "info": "Controls where the heading wraps. Lower values force an earlier line break."
+      "info": "Controls where the heading wraps. Lower values force an earlier break."
     },
     {
       "type": "inline_richtext",
@@ -739,55 +1091,6 @@
       "id": "accent_color_hover",
       "label": "Button colour on hover",
       "default": "#B31D33"
-    },
-
-    { "type": "header", "content": "Layout" },
-    {
-      "type": "select",
-      "id": "content_alignment",
-      "label": "Content position (desktop)",
-      "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Centre" }
-      ],
-      "default": "left"
-    },
-    {
-      "type": "select",
-      "id": "mobile_alignment",
-      "label": "Content position (mobile)",
-      "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Centre" }
-      ],
-      "default": "center"
-    },
-    {
-      "type": "range",
-      "id": "panel_radius",
-      "label": "Mobile card corner radius",
-      "min": 0,
-      "max": 48,
-      "step": 2,
-      "unit": "px",
-      "default": 24
-    },
-    {
-      "type": "checkbox",
-      "id": "overlap_header",
-      "label": "Extend behind transparent header",
-      "default": true
-    },
-    {
-      "type": "range",
-      "id": "header_height",
-      "label": "Header height",
-      "min": 0,
-      "max": 160,
-      "step": 4,
-      "unit": "px",
-      "default": 88,
-      "info": "Used to pull the section up behind a transparent header and to pad the content clear of it."
     }
   ],
   "presets": [

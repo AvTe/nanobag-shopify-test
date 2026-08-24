@@ -9,41 +9,6 @@
  */
 {
   "sections": {
-    "hero_videos_3HJCF8": {
-      "type": "hero-videos",
-      "name": "Hero video",
-      "settings": {
-        "hero_video": "shopify://files/videos/Mobile Banner Video.mp4",
-        "poster_image": "shopify://shop_images/295234fcfe70409691ab2b6f3f094d7c.thumbnail.0000000000_800x_be4d4793-8b1e-4b12-abfa-762cf7ebeec0.png",
-        "overlay_color": "#000000",
-        "overlay_opacity": 40,
-        "overlay_opacity_mobile": 20,
-        "height_desktop": 88,
-        "height_mobile": 46,
-        "badge_image_desktop": "shopify://shop_images/Group_1171275577_6361abee-22f3-4ca2-b1f1-cd733870f0a4.png",
-        "badge_image_mobile": "shopify://shop_images/Group_1171275577.png",
-        "badge_alt": "Nomads Nation Best Tote 2025",
-        "show_stars": true,
-        "rating_value": 4.8,
-        "rating_text": "<strong>4.8 stars</strong> • <strong>200k+</strong> customers",
-        "star_color": "#F5A623",
-        "heading": "Extreme <em>practicality</em>",
-        "heading_tag": "h1",
-        "heading_measure": 14,
-        "subheading": "Zero bulk, Maximum Carry.",
-        "show_subheading_mobile": false,
-        "cta_text": "Get Nanobag",
-        "cta_text_mobile": "Shop Nanobag",
-        "cta_link": "",
-        "accent_color": "#CC253E",
-        "accent_color_hover": "#B31D33",
-        "content_alignment": "left",
-        "mobile_alignment": "center",
-        "panel_radius": 24,
-        "overlap_header": true,
-        "header_height": 88
-      }
-    },
     "hero_video": {
       "type": "hero-video",
       "settings": {
@@ -71,6 +36,41 @@
         "card_text_color": "#121212",
         "content_alignment": "left",
         "mobile_alignment": "center"
+      }
+    },
+    "hero_videos_3HJCF8": {
+      "type": "hero-videos",
+      "name": "Hero video",
+      "settings": {
+        "hero_video": "shopify://files/videos/Mobile Banner Video.mp4",
+        "poster_image": "shopify://shop_images/295234fcfe70409691ab2b6f3f094d7c.thumbnail.0000000000_800x_be4d4793-8b1e-4b12-abfa-762cf7ebeec0.png",
+        "height_mobile": 46,
+        "overlay_color": "#000000",
+        "overlay_opacity": 40,
+        "overlay_opacity_mobile": 20,
+        "height_desktop": 88,
+        "content_alignment": "left",
+        "mobile_alignment": "center",
+        "panel_radius": 24,
+        "overlap_header": true,
+        "header_height": 88,
+        "badge_image_desktop": "shopify://shop_images/Group_1171275577_6361abee-22f3-4ca2-b1f1-cd733870f0a4.png",
+        "badge_image_mobile": "shopify://shop_images/Group_1171275577.png",
+        "badge_alt": "Nomads Nation Best Tote 2025",
+        "show_stars": true,
+        "rating_value": 4.8,
+        "rating_text": "<strong>4.8 stars</strong> • <strong>200k+</strong> customers",
+        "star_color": "#F5A623",
+        "heading": "Extreme <em>practicality</em>",
+        "heading_tag": "h1",
+        "heading_measure": 14,
+        "subheading": "Zero bulk, Maximum Carry.",
+        "show_subheading_mobile": false,
+        "cta_text": "Get Nanobag",
+        "cta_text_mobile": "Shop Nanobag",
+        "cta_link": "",
+        "accent_color": "#CC253E",
+        "accent_color_hover": "#B31D33"
       }
     },
     "logo_bar": {
@@ -236,8 +236,8 @@
     }
   },
   "order": [
-    "hero_videos_3HJCF8",
     "hero_video",
+    "hero_videos_3HJCF8",
     "logo_bar",
     "feature_trio",
     "video_gallery"
