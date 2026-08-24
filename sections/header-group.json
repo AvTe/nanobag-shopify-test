@@ -5,27 +5,67 @@
     "announcement-bar": {
       "type": "announcement-bar",
       "settings": {
-        "color_scheme": "scheme-1",
-        "show_line_separator": true,
-        "show_social": false,
-        "auto_rotate": false,
+        "color_scheme": "scheme-4",
+        "show_line_separator": false,
+        "show_social": true,
+        "auto_rotate": true,
         "change_slides_speed": 5,
-        "enable_country_selector": false,
+        "enable_country_selector": true,
         "enable_language_selector": false
       },
       "blocks": {
-        "announcement-bar-0": {
+        "announcement_1": {
           "type": "announcement",
           "settings": {
-            "text": "Welcome to our store",
+            "text": "Fast 2-4 Day Local Shipping",
             "text_alignment": "center",
-            "color_scheme": "scheme-1",
+            "color_scheme": "scheme-4",
+            "link": ""
+          }
+        },
+        "announcement_2": {
+          "type": "announcement",
+          "settings": {
+            "text": "Free Shipping on Orders 3+ Bags",
+            "text_alignment": "center",
+            "color_scheme": "scheme-4",
+            "link": ""
+          }
+        },
+        "announcement_3": {
+          "type": "announcement",
+          "settings": {
+            "text": "LIMITED SPECIAL - Details below",
+            "text_alignment": "center",
+            "color_scheme": "scheme-4",
+            "link": ""
+          }
+        },
+        "announcement_4": {
+          "type": "announcement",
+          "settings": {
+            "text": "FREE GIFT OFFER - See below for details",
+            "text_alignment": "center",
+            "color_scheme": "scheme-4",
+            "link": ""
+          }
+        },
+        "announcement_5": {
+          "type": "announcement",
+          "settings": {
+            "text": "One Tree Planted for Every Bag",
+            "text_alignment": "center",
+            "color_scheme": "scheme-4",
             "link": ""
           }
         }
       },
       "block_order": [
-        "announcement-bar-0"
+        "announcement_1",
+        "announcement_2",
+        "announcement_3",
+        "announcement_4",
+        "announcement_5"
       ]
     },
     "header": {

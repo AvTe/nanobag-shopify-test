@@ -10,13 +10,18 @@
   above it in the header group. The negative margin only affects the sibling
   that follows, which is exactly the hero.
 
+  The hook is .section-header, not #shopify-section-header. Sections rendered
+  inside a section group get an id of the form shopify-section-sections--ID__header,
+  so the plain id never matches. .section-header comes from the section's own
+  schema class and is what Dawn's sticky-header JS queries for too.
+
   --header-height is set by Dawn's own sticky-header element during
   connectedCallback, so it is available before first paint and this does not
   cause layout shift. It falls back to 0, which degrades to a normal header
   rather than a broken one if sticky scrolling is turned off.
 */
 
-#shopify-section-header:has(.header-wrapper--transparent) {
+.section-header:has(.header-wrapper--transparent) {
   position: relative;
   z-index: 3;
   margin-block-end: calc(-1 * var(--header-height, 0px));
