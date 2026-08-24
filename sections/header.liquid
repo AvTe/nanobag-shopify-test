@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
+{{ 'section-header-controls.css' | asset_url | stylesheet_tag }}
 <link rel="stylesheet" href="{{ 'component-search.css' | asset_url }}" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{{ 'component-menu-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
 <link
@@ -159,18 +160,19 @@
   {{ 'section-header-transparent.css' | asset_url | stylesheet_tag }}
 {%- endif -%}
 
-{%- if section.settings.menu_alignment == 'center' -%}
-  {{ 'section-header-menu-center.css' | asset_url | stylesheet_tag }}
-{%- endif -%}
-
 <{{ header_tag }}
   {% if header_tag == 'sticky-header' %}
     data-sticky-type="{{ section.settings.sticky_header_type }}"
   {% endif %}
   class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}{% if transparent_header %} header-wrapper--transparent{% endif %}"
-  {%- if transparent_header %}
-    style="--header-transparent-text: {{ section.settings.transparent_text_color }}; --header-scrim-opacity: {{ section.settings.transparent_scrim_opacity | divided_by: 100.0 }};"
-  {%- endif %}
+  style="
+    --header-icon-size: {{ section.settings.icon_size }}px;
+    --header-logo-width-mobile: {{ section.settings.logo_width_mobile }}px;
+    {%- if transparent_header %}
+      --header-transparent-text: {{ section.settings.transparent_text_color }};
+      --header-scrim-opacity: {{ section.settings.transparent_scrim_opacity | divided_by: 100.0 }};
+    {%- endif %}
+  "
 >
   {%- liquid
     assign social_links = false
@@ -188,7 +190,7 @@
       assign language_selector = true
     endif
   -%}
-  <header class="header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }}{% if section.settings.menu_alignment == 'center' %} header--menu-center{% endif %} page-width{% if section.settings.menu_type_desktop == 'drawer' %} drawer-menu{% endif %}{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if social_links %} header--has-social{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}{% if country_selector or language_selector %} header--has-localizations{% endif %}">
+  <header class="header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }}{% if section.settings.menu_alignment == 'center' %} header--menu-center{% endif %}{% unless section.settings.show_account_mobile %} header--hide-account-mobile{% endunless %} page-width{% if section.settings.menu_type_desktop == 'drawer' %} drawer-menu{% endif %}{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if social_links %} header--has-social{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}{% if country_selector or language_selector %} header--has-localizations{% endif %}">
     {%- liquid
       assign render_search_left = false
       if section.settings.logo_position == 'top-center' or section.settings.menu == blank or shop.customer_accounts_enabled
@@ -539,9 +541,18 @@
       "id": "transparent_header",
       "label": "Overlay the header on the page below",
       "options": [
-        { "value": "never", "label": "Never" },
-        { "value": "index", "label": "Home page only" },
-        { "value": "all", "label": "All pages" }
+        {
+          "value": "never",
+          "label": "Never"
+        },
+        {
+          "value": "index",
+          "label": "Home page only"
+        },
+        {
+          "value": "all",
+          "label": "All pages"
+        }
       ],
       "default": "index",
       "info": "Only use on pages that open with a full-bleed hero, or the header will be unreadable."
@@ -549,8 +560,37 @@
     {
       "type": "color",
       "id": "transparent_text_color",
-      "label": "Overlay logo and link colour",
-      "default": "#ffffff"
+      "label": "Header text colour over the hero",
+      "default": "#ffffff",
+      "info": "Applies to the logo, menu links and icons while the header overlays the hero. White suits a dark video."
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Header icon size",
+      "min": 44,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 56,
+      "info": "Account and cart icons. 44px is the minimum accessible tap target and is never gone below."
+    },
+    {
+      "type": "range",
+      "id": "logo_width_mobile",
+      "label": "Logo width on small screens",
+      "min": 60,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 110,
+      "info": "Applies below 990px. Desktop width is set in Theme settings."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account_mobile",
+      "label": "Show account icon on small screens",
+      "default": false
     },
     {
       "type": "checkbox",
@@ -563,8 +603,14 @@
       "id": "menu_alignment",
       "label": "Desktop menu position",
       "options": [
-        { "value": "start", "label": "Next to the logo" },
-        { "value": "center", "label": "Centred" }
+        {
+          "value": "start",
+          "label": "Next to the logo"
+        },
+        {
+          "value": "center",
+          "label": "Centred"
+        }
       ],
       "default": "center",
       "info": "Only applies when the logo sits on the left."

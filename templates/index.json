@@ -35,7 +35,8 @@
         "card_background": "#ffffff",
         "card_text_color": "#121212",
         "content_alignment": "left",
-        "mobile_alignment": "center"
+        "mobile_alignment": "center",
+        "cta_size": 125
       }
     },
     "logo_bar": {

@@ -158,7 +158,12 @@
 
 .hero-video__heading {
   margin: 0;
-  font-size: clamp(2.25rem, 1.35rem + 3.85vw, 5rem);
+  /* Dawn colours every h1-h5 with rgb(var(--color-foreground)), which beats
+     inheritance and would leave the headline dark over the video. Opting back
+     into the inherited copy colour is the fix, not a more specific override. */
+  color: inherit;
+  /* 40px at 375px, matching the reference, rising to 80px at 1440px. */
+  font-size: clamp(2.5rem, 1.6rem + 3.85vw, 5rem);
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.02em;
@@ -187,13 +192,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 2.75rem; /* 44px tap target */
+  /* Scaled by a Theme Editor multiplier. max() keeps the 44px tap target even
+     if the merchant scales the button below 100%. */
+  min-height: max(2.75rem, calc(var(--hero-cta-scale, 1) * 2.75rem));
   margin-block-start: clamp(0.25rem, 0.1rem + 0.6vw, 0.75rem);
-  padding: clamp(0.75rem, 0.62rem + 0.53vw, 1rem) clamp(2rem, 1.4rem + 2.55vw, 3.25rem);
+  padding:
+    calc(var(--hero-cta-scale, 1) * clamp(0.75rem, 0.62rem + 0.53vw, 1rem))
+    calc(var(--hero-cta-scale, 1) * clamp(2rem, 1.4rem + 2.55vw, 3.25rem));
   border-radius: 999px;
   background: var(--hero-cta-background, #cc253e);
   color: var(--hero-cta-text, #fff);
-  font-size: clamp(0.9375rem, 0.88rem + 0.23vw, 1.0625rem);
+  font-size: calc(var(--hero-cta-scale, 1) * clamp(0.9375rem, 0.88rem + 0.23vw, 1.0625rem));
   font-weight: 600;
   line-height: 1;
   text-decoration: none;

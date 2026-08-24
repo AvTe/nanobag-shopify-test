@@ -39,6 +39,7 @@
     --hero-card-background: {{ section.settings.card_background }};
     --hero-card-text: {{ section.settings.card_text_color }};
     --hero-overlay-text: {{ section.settings.overlay_text_color }};
+    --hero-cta-scale: {{ section.settings.cta_size | divided_by: 100.0 }};
   "
 >
   <div class="hero-video__media">
@@ -339,6 +340,17 @@
       "id": "cta_text_color",
       "label": "Button text",
       "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "cta_size",
+      "label": "Button size",
+      "min": 80,
+      "max": 180,
+      "step": 5,
+      "unit": "%",
+      "default": 125,
+      "info": "Scales padding and label together. The 44px minimum tap target is kept at any value."
     },
     {
       "type": "header",
