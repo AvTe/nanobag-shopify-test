@@ -140,13 +140,33 @@
   if section.settings.sticky_header_type != 'none'
     assign header_tag = 'sticky-header'
   endif
+
+  # The header overlays the first section only where that section is a
+  # full-bleed hero. Driving it from a setting rather than a hardcoded template
+  # check keeps it usable on landing pages too.
+  assign transparent_header = false
+  case section.settings.transparent_header
+    when 'all'
+      assign transparent_header = true
+    when 'index'
+      if template.name == 'index'
+        assign transparent_header = true
+      endif
+  endcase
 %}
+
+{%- if transparent_header -%}
+  {{ 'section-header-transparent.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
 
 <{{ header_tag }}
   {% if header_tag == 'sticky-header' %}
     data-sticky-type="{{ section.settings.sticky_header_type }}"
   {% endif %}
-  class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}"
+  class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}{% if transparent_header %} header-wrapper--transparent{% endif %}"
+  {%- if transparent_header %}
+    style="--header-transparent-text: {{ section.settings.transparent_text_color }}; --header-scrim-opacity: {{ section.settings.transparent_scrim_opacity | divided_by: 100.0 }};"
+  {%- endif %}
 >
   {%- liquid
     assign social_links = false
@@ -280,7 +300,9 @@
           </localization-form>
         {%- endif -%}
       </div>
-      {% render 'header-search', input_id: 'Search-In-Modal' %}
+      {%- if section.settings.show_search -%}
+        {% render 'header-search', input_id: 'Search-In-Modal' %}
+      {%- endif -%}
 
       {%- if shop.customer_accounts_enabled -%}
         <shopify-account
@@ -504,6 +526,45 @@
   "class": "section-header",
   "max_blocks": 3,
   "settings": [
+    {
+      "type": "header",
+      "content": "Transparent header"
+    },
+    {
+      "type": "select",
+      "id": "transparent_header",
+      "label": "Overlay the header on the page below",
+      "options": [
+        { "value": "never", "label": "Never" },
+        { "value": "index", "label": "Home page only" },
+        { "value": "all", "label": "All pages" }
+      ],
+      "default": "index",
+      "info": "Only use on pages that open with a full-bleed hero, or the header will be unreadable."
+    },
+    {
+      "type": "color",
+      "id": "transparent_text_color",
+      "label": "Overlay logo and link colour",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show search icon",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "transparent_scrim_opacity",
+      "label": "Overlay contrast scrim",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 35,
+      "info": "Darkens the top of the hero behind the header. Raise it if the video is light at the top."
+    },
     {
       "type": "select",
       "id": "logo_position",

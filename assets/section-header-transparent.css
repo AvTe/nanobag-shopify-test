@@ -1,0 +1,136 @@
+/*
+  Transparent header
+  ------------------
+  Loaded only when the overlay setting is on, so a store that does not use it
+  downloads none of this.
+
+  The header is pulled over the section below it with a negative margin rather
+  than position: absolute. Absolute positioning would take the header out of
+  flow relative to the viewport and cover the announcement bar, which sits
+  above it in the header group. The negative margin only affects the sibling
+  that follows, which is exactly the hero.
+
+  --header-height is set by Dawn's own sticky-header element during
+  connectedCallback, so it is available before first paint and this does not
+  cause layout shift. It falls back to 0, which degrades to a normal header
+  rather than a broken one if sticky scrolling is turned off.
+*/
+
+#shopify-section-header:has(.header-wrapper--transparent) {
+  position: relative;
+  z-index: 3;
+  margin-block-end: calc(-1 * var(--header-height, 0px));
+}
+
+.header-wrapper--transparent {
+  position: relative;
+  background: transparent;
+  border-block-end-color: transparent;
+}
+
+/* Contrast scrim. The hero video is arbitrary footage, so the top of the frame
+   cannot be assumed dark enough for white links to clear 4.5:1 on its own. */
+.header-wrapper--transparent::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / var(--header-scrim-opacity, 0.35)),
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* Dawn colours these from its scheme variables, so they are re-pointed at the
+   overlay colour rather than overridden with !important. */
+.header-wrapper--transparent .header__heading-link,
+.header-wrapper--transparent .header__menu-item,
+.header-wrapper--transparent .header__icon,
+.header-wrapper--transparent .header__icon--cart,
+.header-wrapper--transparent .header__active-menu-item,
+.header-wrapper--transparent .list-menu__item--link,
+.header-wrapper--transparent .localization-form__select,
+.header-wrapper--transparent summary.header__icon {
+  color: var(--header-transparent-text, #fff);
+}
+
+.header-wrapper--transparent .header__heading-link .h2,
+.header-wrapper--transparent .header__icon .svg-wrapper,
+.header-wrapper--transparent .header__icon svg {
+  color: inherit;
+  fill: currentcolor;
+}
+
+.header-wrapper--transparent .header__menu-item:hover,
+.header-wrapper--transparent .header__icon:hover {
+  color: var(--header-transparent-text, #fff);
+  opacity: 0.75;
+}
+
+/* The focus ring has to be visible against video rather than against the theme
+   background, so it is drawn in the overlay colour with an offset. */
+.header-wrapper--transparent .header__menu-item:focus-visible,
+.header-wrapper--transparent .header__icon:focus-visible,
+.header-wrapper--transparent .header__heading-link:focus-visible {
+  outline: 2px solid var(--header-transparent-text, #fff);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* Cart count stays legible: invert it against the overlay colour. */
+.header-wrapper--transparent .cart-count-bubble {
+  background: var(--header-transparent-text, #fff);
+  color: rgb(var(--color-background));
+}
+
+/*
+  Revert to the solid header in every state where the content behind it is no
+  longer the hero: once scrolled past, while sticky, and while a dropdown or
+  the mobile drawer is open.
+*/
+.shopify-section-header-sticky .header-wrapper--transparent,
+.shopify-section-header-hidden .header-wrapper--transparent,
+.header-wrapper--transparent:has(details[open]) {
+  background: rgb(var(--color-background));
+}
+
+.shopify-section-header-sticky .header-wrapper--transparent::before,
+.header-wrapper--transparent:has(details[open])::before {
+  opacity: 0;
+}
+
+.shopify-section-header-sticky .header-wrapper--transparent .header__heading-link,
+.shopify-section-header-sticky .header-wrapper--transparent .header__menu-item,
+.shopify-section-header-sticky .header-wrapper--transparent .header__icon,
+.header-wrapper--transparent:has(details[open]) .header__menu-item,
+.header-wrapper--transparent:has(details[open]) .header__icon {
+  color: rgb(var(--color-foreground));
+}
+
+.shopify-section-header-sticky .header-wrapper--transparent .cart-count-bubble {
+  background: rgb(var(--color-foreground));
+  color: rgb(var(--color-background));
+}
+
+/*
+  :has() is required for the overlay to engage. In a browser without it the
+  header simply renders solid and in flow, which is a usable page rather than
+  white text on a white background.
+*/
+@supports not selector(:has(*)) {
+  .header-wrapper--transparent {
+    background: rgb(var(--color-background));
+  }
+
+  .header-wrapper--transparent .header__heading-link,
+  .header-wrapper--transparent .header__menu-item,
+  .header-wrapper--transparent .header__icon {
+    color: rgb(var(--color-foreground));
+  }
+
+  .header-wrapper--transparent::before {
+    display: none;
+  }
+}
