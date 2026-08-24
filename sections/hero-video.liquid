@@ -1,0 +1,253 @@
+{{ 'section-hero-video.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign overlay_alpha = section.settings.overlay_opacity | divided_by: 100.0
+  assign heading_tag = section.settings.heading_tag | default: 'h1'
+  assign cta_url = section.settings.cta_link | default: routes.all_products_collection_url
+-%}
+
+{%- comment -%}
+  The overlay opacity, colour and section height are the only values that cannot
+  be known at build time, so they are piped in as custom properties. Everything
+  else lives in section-hero-video.css.
+{%- endcomment -%}
+<div
+  class="hero-video hero-video--align-{{ section.settings.content_alignment }} hero-video--mobile-{{ section.settings.mobile_alignment }}"
+  style="
+    --hero-overlay-opacity: {{ overlay_alpha }};
+    --hero-overlay-color: {{ section.settings.overlay_color }};
+    --hero-height: {{ section.settings.section_height }}vh;
+    --hero-cta-background: {{ section.settings.cta_background }};
+    --hero-cta-text: {{ section.settings.cta_text_color }};
+  "
+>
+  <div class="hero-video__media">
+    {%- comment -%}
+      The poster is the LCP element: eager, high priority, responsive. It is
+      decorative, so alt is intentionally empty. The heading carries the meaning.
+    {%- endcomment -%}
+    {%- if section.settings.poster_image != blank -%}
+      {{
+        section.settings.poster_image
+        | image_url: width: 1920
+        | image_tag:
+          class: 'hero-video__poster',
+          loading: 'eager',
+          fetchpriority: 'high',
+          sizes: '100vw',
+          widths: '640, 960, 1280, 1600, 1920',
+          alt: ''
+      }}
+    {%- endif -%}
+
+    {%- comment -%}
+      image_size is deliberately omitted so Shopify emits no poster attribute on
+      the video. The video then paints transparent until its first frame, which
+      lets the responsive poster image above show through underneath. That keeps
+      the img as the true LCP candidate, avoids downloading a second poster, and
+      needs no JavaScript to cross-fade.
+    {%- endcomment -%}
+    {%- if section.settings.hero_video != blank -%}
+      {{
+        section.settings.hero_video
+        | video_tag:
+          class: 'hero-video__media-video',
+          autoplay: true,
+          loop: true,
+          muted: true,
+          controls: false,
+          playsinline: true,
+          preload: 'metadata'
+      }}
+    {%- endif -%}
+
+    <div class="hero-video__overlay" aria-hidden="true"></div>
+  </div>
+
+  <div class="hero-video__inner">
+    <div class="hero-video__content">
+      {%- if section.settings.badge_image != blank -%}
+        {{
+          section.settings.badge_image
+          | image_url: width: 320
+          | image_tag:
+            class: 'hero-video__badge',
+            loading: 'eager',
+            widths: '160, 240, 320',
+            sizes: '(min-width: 750px) 110px, 88px',
+            alt: section.settings.badge_alt
+        }}
+      {%- endif -%}
+
+      {%- if section.settings.rating_text != blank -%}
+        <p class="hero-video__rating">
+          {%- render 'star-rating', rating: section.settings.rating_value, class: 'hero-video__stars' -%}
+          <span class="hero-video__rating-text">{{ section.settings.rating_text }}</span>
+        </p>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <{{ heading_tag }} class="hero-video__heading">{{ section.settings.heading }}</{{ heading_tag }}>
+      {%- endif -%}
+
+      {%- if section.settings.subheading != blank -%}
+        <p class="hero-video__subheading">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.cta_text != blank -%}
+        <a class="hero-video__cta" href="{{ cta_url }}">{{ section.settings.cta_text | escape }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Hero video",
+  "tag": "section",
+  "class": "section-hero-video",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    { "type": "header", "content": "Media" },
+    {
+      "type": "video",
+      "id": "hero_video",
+      "label": "Background video",
+      "info": "Muted and looping. Leave empty to show the poster image only."
+    },
+    {
+      "type": "image_picker",
+      "id": "poster_image",
+      "label": "Poster image",
+      "info": "Shown before the video loads and to visitors who prefer reduced motion. Required."
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Image overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 40,
+      "info": "Keep body text at 4.5:1 contrast against the poster."
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay colour",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "label": "Section height",
+      "min": 60,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 90
+    },
+
+    { "type": "header", "content": "Badge and rating" },
+    { "type": "image_picker", "id": "badge_image", "label": "Award badge" },
+    {
+      "type": "text",
+      "id": "badge_alt",
+      "label": "Badge alt text",
+      "default": "Nomads Nation Best Tote 2025"
+    },
+    {
+      "type": "range",
+      "id": "rating_value",
+      "label": "Star rating",
+      "min": 0,
+      "max": 5,
+      "step": 0.1,
+      "default": 4.8,
+      "info": "Fills the stars. Update the caption below to match."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "rating_text",
+      "label": "Rating caption",
+      "default": "<strong>4.8</strong> stars • <strong>200k+</strong> customers",
+      "info": "Bold the numbers to match the design."
+    },
+
+    { "type": "header", "content": "Content" },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Extreme practicality"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading level",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" }
+      ],
+      "default": "h1",
+      "info": "Use H1 only when this section is the top of the page. One H1 per page."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "Supporting text",
+      "default": "Zero bulk, Maximum Carry."
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Button label",
+      "default": "Get Nanobag"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "Button link",
+      "info": "Defaults to the all products collection when empty."
+    },
+    {
+      "type": "color",
+      "id": "cta_background",
+      "label": "Button background",
+      "default": "#cc253e"
+    },
+    {
+      "type": "color",
+      "id": "cta_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Desktop content position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Centre" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "mobile_alignment",
+      "label": "Mobile content position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Centre" }
+      ],
+      "default": "center"
+    }
+  ],
+  "presets": [{ "name": "Hero video" }]
+}
+{% endschema %}

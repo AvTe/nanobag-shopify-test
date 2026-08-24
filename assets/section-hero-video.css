@@ -1,0 +1,247 @@
+/*
+  Hero video
+  ----------
+  One markup tree at every viewport. Sizing is fluid via clamp() rather than
+  swapped at breakpoints, so the layout has no jump points between 320px and
+  2560px. The only media query is prefers-reduced-motion.
+*/
+
+.section-hero-video {
+  /* TODO(figma): confirm whether the page sits in an inset rounded frame.
+     If it does, set these two values; nothing else needs to change. */
+  --hero-inset: 0px;
+  --hero-radius: 0px;
+}
+
+.hero-video {
+  position: relative;
+  display: grid;
+  min-height: var(--hero-height, 90vh);
+  margin-inline: var(--hero-inset);
+  border-radius: var(--hero-radius);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Media and content occupy the same grid cell so the content stacks on top
+   without absolute positioning fighting the intrinsic height. */
+.hero-video__media,
+.hero-video__inner {
+  grid-area: 1 / 1;
+}
+
+/* Media layer
+   ------------------------------------------------------------------ */
+
+.hero-video__media {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-video__poster,
+.hero-video__media-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The video carries no poster attribute, so it paints transparent until its
+   first frame and the image below shows through. No JavaScript cross-fade. */
+.hero-video__media-video {
+  z-index: 1;
+  border: 0;
+}
+
+/* A sibling element rather than a pseudo-element, so it sits unambiguously
+   between the media and the content in the stacking order. */
+.hero-video__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: var(--hero-overlay-color, #000);
+  opacity: var(--hero-overlay-opacity, 0.4);
+  pointer-events: none;
+}
+
+/* Content layer
+   ------------------------------------------------------------------ */
+
+.hero-video__inner {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: var(--page-width, 1400px);
+  margin-inline: auto;
+  /* TODO(figma): confirm container max-width and horizontal padding. */
+  padding-inline: clamp(1.25rem, 0.5rem + 4vw, 5rem);
+  padding-block: clamp(3rem, 2rem + 4vw, 6rem);
+}
+
+.hero-video__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(0.75rem, 0.55rem + 0.85vw, 1.25rem);
+  max-width: 36ch;
+  color: #fff;
+  text-align: left;
+  text-wrap: balance;
+}
+
+.hero-video__badge {
+  width: clamp(4.75rem, 3.9rem + 3.6vw, 7rem);
+  height: auto;
+  margin-block-end: clamp(0.25rem, 0.1rem + 0.6vw, 0.75rem);
+}
+
+/* Rating
+   ------------------------------------------------------------------ */
+
+.hero-video__rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0;
+  font-size: clamp(0.8125rem, 0.74rem + 0.31vw, 1rem);
+  line-height: 1.3;
+}
+
+.hero-video__rating-text {
+  letter-spacing: 0.01em;
+}
+
+.star-rating {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  line-height: 1;
+}
+
+.star-rating__layer {
+  display: flex;
+  gap: 0.15em;
+  white-space: nowrap;
+}
+
+.star-rating__layer--track {
+  color: rgb(255 255 255 / 35%);
+}
+
+/* Clipped to the rating percentage, which is why fractional ratings work
+   without half-star icon variants. */
+.star-rating__layer--fill {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  overflow: hidden;
+  color: #f5b301;
+}
+
+.star-rating__star {
+  width: 1em;
+  height: 1em;
+  flex: 0 0 auto;
+}
+
+/* Typography
+   ------------------------------------------------------------------ */
+
+.hero-video__heading {
+  margin: 0;
+  /* TODO(figma): confirm family, weight and letter spacing from the inspect panel. */
+  font-size: clamp(2.75rem, 1.55rem + 5.1vw, 5rem);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+}
+
+.hero-video__subheading {
+  margin: 0;
+  font-size: clamp(0.9375rem, 0.86rem + 0.31vw, 1.125rem);
+  line-height: 1.45;
+}
+
+/* Call to action
+   ------------------------------------------------------------------ */
+
+.hero-video__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem; /* 44px tap target */
+  margin-block-start: clamp(0.5rem, 0.3rem + 0.85vw, 1rem);
+  padding: clamp(0.75rem, 0.62rem + 0.53vw, 1rem) clamp(2rem, 1.4rem + 2.55vw, 3.25rem);
+  border-radius: 999px;
+  background: var(--hero-cta-background, #cc253e);
+  color: var(--hero-cta-text, #fff);
+  font-size: clamp(0.9375rem, 0.88rem + 0.23vw, 1.0625rem);
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.hero-video__cta:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.hero-video__cta:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+/* Alignment variants
+   ------------------------------------------------------------------ */
+
+.hero-video--align-center .hero-video__inner {
+  justify-content: center;
+}
+
+.hero-video--align-center .hero-video__content {
+  align-items: center;
+  text-align: center;
+}
+
+/* Mobile alignment is applied below the point where the content column stops
+   being narrower than the viewport, which is a genuine reflow, not a relayout. */
+@media screen and (max-width: 749px) {
+  .hero-video--mobile-center .hero-video__inner {
+    justify-content: center;
+  }
+
+  .hero-video--mobile-center .hero-video__content {
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero-video--mobile-left .hero-video__inner {
+    justify-content: flex-start;
+  }
+
+  .hero-video--mobile-left .hero-video__content {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+/* Motion
+   ------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-video__media-video {
+    display: none;
+  }
+
+  .hero-video__cta {
+    transition: none;
+  }
+
+  .hero-video__cta:hover {
+    transform: none;
+  }
+}
