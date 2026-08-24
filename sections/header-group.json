@@ -87,7 +87,9 @@
         "transparent_header": "index",
         "transparent_text_color": "#ffffff",
         "transparent_scrim_opacity": 35,
-        "show_search": false
+        "show_search": false,
+        "menu_alignment": "center",
+        "logo_is_h1": false
       }
     }
   },

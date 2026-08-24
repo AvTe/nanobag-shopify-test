@@ -159,6 +159,10 @@
   {{ 'section-header-transparent.css' | asset_url | stylesheet_tag }}
 {%- endif -%}
 
+{%- if section.settings.menu_alignment == 'center' -%}
+  {{ 'section-header-menu-center.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
+
 <{{ header_tag }}
   {% if header_tag == 'sticky-header' %}
     data-sticky-type="{{ section.settings.sticky_header_type }}"
@@ -184,7 +188,7 @@
       assign language_selector = true
     endif
   -%}
-  <header class="header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }} page-width{% if section.settings.menu_type_desktop == 'drawer' %} drawer-menu{% endif %}{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if social_links %} header--has-social{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}{% if country_selector or language_selector %} header--has-localizations{% endif %}">
+  <header class="header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }}{% if section.settings.menu_alignment == 'center' %} header--menu-center{% endif %} page-width{% if section.settings.menu_type_desktop == 'drawer' %} drawer-menu{% endif %}{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if social_links %} header--has-social{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}{% if country_selector or language_selector %} header--has-localizations{% endif %}">
     {%- liquid
       assign render_search_left = false
       if section.settings.logo_position == 'top-center' or section.settings.menu == blank or shop.customer_accounts_enabled
@@ -201,7 +205,7 @@
     -%}
 
     {%- if section.settings.logo_position != 'middle-center' -%}
-      {%- if request.page_type == 'index' -%}
+      {%- if request.page_type == 'index' and section.settings.logo_is_h1 -%}
         <h1 class="header__heading">
       {%- endif -%}
       <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset">
@@ -228,7 +232,7 @@
           <span class="h2">{{ shop.name }}</span>
         {%- endif -%}
       </a>
-      {%- if request.page_type == 'index' -%}
+      {%- if request.page_type == 'index' and section.settings.logo_is_h1 -%}
         </h1>
       {%- endif -%}
     {%- endif -%}
@@ -244,7 +248,7 @@
     %}
 
     {%- if section.settings.logo_position == 'middle-center' -%}
-      {%- if request.page_type == 'index' -%}
+      {%- if request.page_type == 'index' and section.settings.logo_is_h1 -%}
         <h1 class="header__heading">
       {%- endif -%}
       <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset">
@@ -271,7 +275,7 @@
           <span class="h2">{{ shop.name }}</span>
         {%- endif -%}
       </a>
-      {%- if request.page_type == 'index' -%}
+      {%- if request.page_type == 'index' and section.settings.logo_is_h1 -%}
         </h1>
       {%- endif -%}
     {%- endif -%}
@@ -553,6 +557,24 @@
       "id": "show_search",
       "label": "Show search icon",
       "default": true
+    },
+    {
+      "type": "select",
+      "id": "menu_alignment",
+      "label": "Desktop menu position",
+      "options": [
+        { "value": "start", "label": "Next to the logo" },
+        { "value": "center", "label": "Centred" }
+      ],
+      "default": "center",
+      "info": "Only applies when the logo sits on the left."
+    },
+    {
+      "type": "checkbox",
+      "id": "logo_is_h1",
+      "label": "Use the logo as the home page H1",
+      "default": false,
+      "info": "Leave off when a home page section already provides the H1, such as the hero. A page must never have two."
     },
     {
       "type": "range",
