@@ -48,10 +48,12 @@ no frameworks — Dawn ships everything required.
 shopify theme dev --store nanobags.myshopify.com
 
 # lint before every commit
-shopify theme check
+shopify theme check --fail-level error
 ```
 
-CI runs `shopify theme check --fail-level error` on every push.
+Theme Check is run locally before every commit rather than in GitHub Actions:
+Actions is unavailable on this account, and a permanently failing check on a
+repo meant to be read is worse than none.
 
 ## Repo conventions
 
