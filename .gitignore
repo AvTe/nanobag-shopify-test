@@ -10,3 +10,6 @@ Thumbs.db
 .shopify
 node_modules
 *.zip
+# Project working files (not part of the theme)
+audit/
+assets-src/
