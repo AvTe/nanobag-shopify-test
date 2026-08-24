@@ -22,8 +22,8 @@
         "mobile_media_ratio": "3 / 4",
         "badge_image": "shopify://shop_images/Group_1171275577_6361abee-22f3-4ca2-b1f1-cd733870f0a4.png",
         "badge_alt": "Nomads Nation Best Tote 2025",
-        "rating_value": 4.8,
-        "rating_text": "<strong>4.8</strong> stars • <strong>200k+</strong> customers",
+        "rating_value": 4.85,
+        "rating_text": "<strong>4.85</strong> stars • <strong>200k+</strong> customers",
         "heading": "Extreme practicality",
         "heading_tag": "h1",
         "subheading": "Zero bulk, Maximum Carry.",
@@ -36,7 +36,10 @@
         "card_text_color": "#121212",
         "content_alignment": "left",
         "mobile_alignment": "center",
-        "cta_size": 125
+        "cta_size": 125,
+        "badge_size_mobile": 88,
+        "mobile_media_radius": 20,
+        "heading_font": "assistant_n4"
       }
     },
     "logo_bar": {

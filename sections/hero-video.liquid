@@ -1,5 +1,18 @@
 {{ 'section-hero-video.css' | asset_url | stylesheet_tag }}
 
+{%- comment -%}
+  The headline face is a font_picker rather than a Google Fonts link, so it is
+  served from Shopify's own font CDN with no external request.
+
+  font_face emits a bare @font-face rule, not a tag, so it has to sit inside a
+  style block. This is the one place a style block is warranted: an @font-face
+  cannot be expressed as a custom property in a static stylesheet. Dawn does
+  the same thing in theme.liquid.
+{%- endcomment -%}
+{%- style -%}
+  {{ section.settings.heading_font | font_face: font_display: 'swap' }}
+{%- endstyle -%}
+
 {%- liquid
   assign overlay_alpha = section.settings.overlay_opacity | divided_by: 100.0
   assign heading_tag = section.settings.heading_tag | default: 'h1'
@@ -11,6 +24,9 @@
   assign desktop_poster = section.settings.poster_image | default: section.settings.video_desktop.preview_image
   assign mobile_poster = section.settings.poster_image_mobile | default: section.settings.video_mobile.preview_image
   assign mobile_poster = mobile_poster | default: desktop_poster
+
+  assign badge_desktop = section.settings.badge_image
+  assign badge_mobile = section.settings.badge_image_mobile | default: badge_desktop
 
   assign has_video = false
   if section.settings.video_desktop != blank or section.settings.video_mobile != blank
@@ -40,6 +56,10 @@
     --hero-card-text: {{ section.settings.card_text_color }};
     --hero-overlay-text: {{ section.settings.overlay_text_color }};
     --hero-cta-scale: {{ section.settings.cta_size | divided_by: 100.0 }};
+    --hero-heading-font: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+    --hero-heading-weight: {{ section.settings.heading_font.weight }};
+    --hero-badge-size-mobile: {{ section.settings.badge_size_mobile }}px;
+    --hero-media-radius: {{ section.settings.mobile_media_radius }}px;
   "
 >
   <div class="hero-video__media">
@@ -124,17 +144,34 @@
 
   <div class="hero-video__inner">
     <div class="hero-video__content">
-      {%- if section.settings.badge_image != blank -%}
-        {{
-          section.settings.badge_image
-          | image_url: width: 320
-          | image_tag:
-            class: 'hero-video__badge',
-            loading: 'eager',
-            widths: '160, 240, 320',
-            sizes: '(min-width: 750px) 110px, 88px',
-            alt: section.settings.badge_alt
-        }}
+      {%- comment -%}
+        A <picture> swaps the badge lockup at the breakpoint natively. One
+        element, one alt, no duplicated node and no script.
+      {%- endcomment -%}
+      {%- if badge_desktop != blank -%}
+        <picture class="hero-video__badge">
+          {%- if badge_mobile != badge_desktop -%}
+            <source
+              media="(max-width: 749px)"
+              srcset="
+                {{ badge_mobile | image_url: width: 160 }} 160w,
+                {{ badge_mobile | image_url: width: 240 }} 240w,
+                {{ badge_mobile | image_url: width: 320 }} 320w
+              "
+              sizes="{{ section.settings.badge_size_mobile }}px"
+            >
+          {%- endif -%}
+          {{
+            badge_desktop
+            | image_url: width: 320
+            | image_tag:
+              class: 'hero-video__badge-image',
+              loading: 'eager',
+              widths: '160, 240, 320',
+              sizes: '(min-width: 750px) 110px, 88px',
+              alt: section.settings.badge_alt
+          }}
+        </picture>
       {%- endif -%}
 
       {%- if section.settings.rating_text != blank -%}
@@ -252,6 +289,17 @@
       "info": "Height of the media on small screens, where the copy sits in a card below it."
     },
     {
+      "type": "range",
+      "id": "mobile_media_radius",
+      "label": "Mobile media corner radius",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 20,
+      "info": "Rounds the top corners of the video on small screens."
+    },
+    {
       "type": "header",
       "content": "Badge and rating"
     },
@@ -261,10 +309,26 @@
       "label": "Award badge"
     },
     {
+      "type": "image_picker",
+      "id": "badge_image_mobile",
+      "label": "Award badge (small screens)",
+      "info": "Optional. The mobile frame uses a different lockup. Falls back to the badge above."
+    },
+    {
       "type": "text",
       "id": "badge_alt",
       "label": "Badge alt text",
       "default": "Nomads Nation Best Tote 2025"
+    },
+    {
+      "type": "range",
+      "id": "badge_size_mobile",
+      "label": "Badge size on small screens",
+      "min": 48,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 88
     },
     {
       "type": "range",
@@ -286,6 +350,13 @@
     {
       "type": "header",
       "content": "Content"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Headline font",
+      "default": "assistant_n4",
+      "info": "The mobile design uses Fraunces. Pick it here if it is in the list; the theme font is used everywhere else."
     },
     {
       "type": "inline_richtext",
