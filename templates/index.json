@@ -12,10 +12,15 @@
     "hero_video": {
       "type": "hero-video",
       "settings": {
+        "video_desktop": "shopify://files/videos/Desktop Video (1).mp4",
+        "video_mobile": "shopify://files/videos/Mobile Banner Video.mp4",
+        "poster_image": "shopify://shop_images/295234fcfe70409691ab2b6f3f094d7c.thumbnail.0000000000_800x_be4d4793-8b1e-4b12-abfa-762cf7ebeec0.png",
+        "poster_image_mobile": "shopify://shop_images/295234fcfe70409691ab2b6f3f094d7c.thumbnail.0000000000_800x_be4d4793-8b1e-4b12-abfa-762cf7ebeec0.png",
         "overlay_opacity": 40,
-        "overlay_color": "#000000",
+        "overlay_color": "#ffffff",
         "section_height": 90,
         "mobile_media_ratio": "3 / 4",
+        "badge_image": "shopify://shop_images/Group_1171275577_6361abee-22f3-4ca2-b1f1-cd733870f0a4.png",
         "badge_alt": "Nomads Nation Best Tote 2025",
         "rating_value": 4.8,
         "rating_text": "<strong>4.8</strong> stars • <strong>200k+</strong> customers",
