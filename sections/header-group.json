@@ -57,6 +57,9 @@
         "announcement_4",
         "announcement_5"
       ],
+      "custom_css": [
+        ".announcement-bar__message {padding-block: 15px !important;}"
+      ],
       "settings": {
         "bar_height": 55,
         "message_size": 16,
@@ -83,8 +86,9 @@
         "header_gutter": 48,
         "header_content_max": 1900,
         "menu_alignment": "center",
-        "logo_is_h1": false,
+        "logo_is_h1": true,
         "transparent_scrim_opacity": 35,
+        "overlay_target": ".hero-video",
         "logo_position": "middle-left",
         "mobile_logo_position": "center",
         "menu": "main-menu",
@@ -97,8 +101,7 @@
         "enable_language_selector": true,
         "margin_bottom": 0,
         "padding_top": 20,
-        "padding_bottom": 20,
-        "overlay_target": ".hero-video"
+        "padding_bottom": 20
       }
     }
   },
