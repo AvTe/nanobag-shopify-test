@@ -159,13 +159,7 @@ Four new sections plus a modified header, recreating the supplied Figma frames.
 | Video gallery | `sections/video-gallery.liquid` | **none** |
 | Transparent header | modification to `sections/header.liquid` | 50 lines |
 
-- **118 editable Theme Editor settings** across the five.
-- **97 lines of custom JavaScript in total.** No frameworks, no carousel library,
-  no `package.json`, no `node_modules`.
-- Section CSS is loaded per section from `assets/section-*.css`, so a page that
-  does not use a section never downloads its styles.
-
-The detailed reasoning behind each choice is in
+The reasoning behind each choice is in
 [`docs/TECHNICAL-DECISIONS.md`](docs/TECHNICAL-DECISIONS.md). The short version:
 
 - **One markup tree, not two layouts.** Sizing is `clamp()` interpolated between
