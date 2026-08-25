@@ -65,6 +65,7 @@
     --hero-heading-weight: {{ section.settings.heading_font.weight }};
     --hero-badge-size-mobile: {{ section.settings.badge_size_mobile }}px;
     --hero-media-radius: {{ section.settings.mobile_media_radius }}px;
+    --hero-section-background: {{ section.settings.section_background }};
   "
 >
   <div class="hero-video__media">
@@ -477,6 +478,13 @@
       "label": "Desktop copy colour",
       "default": "#ffffff",
       "info": "Used where the copy sits over the video."
+    },
+    {
+      "type": "color",
+      "id": "section_background",
+      "label": "Section background",
+      "default": "#121212",
+      "info": "Shows through the rounded corners of the media on small screens. Match the announcement bar for a seamless top edge."
     },
     {
       "type": "color",

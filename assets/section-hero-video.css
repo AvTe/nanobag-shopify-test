@@ -25,6 +25,10 @@
   position: relative;
   display: grid;
   isolation: isolate;
+  /* Sits behind the media. On small screens the media has rounded top corners,
+     so this is what shows through them: matching the announcement bar above
+     makes the two read as one surface instead of a white seam. */
+  background: var(--hero-section-background, transparent);
 }
 
 /* Media
