@@ -146,7 +146,7 @@
 .header-wrapper details[open] > .header__menu-item,
 .header-wrapper .header__menu-item:hover .header__active-menu-item,
 .header-wrapper .header__menu-item:focus-visible .header__active-menu-item {
-  text-decoration: none;
+  text-decoration: none !important;
 }
 
 /* The reveal is motion for its own sake, so it is dropped entirely rather than
