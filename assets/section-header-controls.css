@@ -27,6 +27,29 @@
   height: var(--header-icon-size, 28px);
 }
 
+/*
+  Optical compensation, not a fudge factor.
+
+  Dawn's drawer toggle fills ~93% of its 18x16 viewBox and the account icon
+  fills ~95% of its 40x40 one, but the cart artwork fills only ~43%. Sized to
+  the same box the cart renders 12px against the hamburger's 26px, which is
+  why it reads as half the size.
+
+  Only the cart needs this. Applying it to every wrapped icon blew the account
+  glyph up to 57px, since that one was never inset to begin with.
+
+  The .svg-wrapper is a fixed 44px, so the larger box overflows transparently
+  and neither layout nor the tap target moves.
+*/
+.header__icon--cart .svg-wrapper > svg {
+  /* flex: none because .svg-wrapper is an inline-flex box fixed at 44px, so a
+     wider child would otherwise be shrunk back down to fit and the
+     compensation would be silently undone. */
+  flex: none;
+  width: calc(var(--header-icon-size, 28px) * var(--header-icon-inset-scale, 2.14));
+  height: calc(var(--header-icon-size, 28px) * var(--header-icon-inset-scale, 2.14));
+}
+
 /* Inter Medium 18px, line-height 27px, from the desktop frame. */
 .header__menu-item {
   font-size: var(--header-nav-size, 18px);
