@@ -171,7 +171,7 @@
     --header-nav-size: {{ section.settings.nav_font_size }}px;
     --header-nav-hover-background: {{ section.settings.nav_hover_background }};
     --header-nav-hover-text: {{ section.settings.nav_hover_text }};
-    --header-nav-hover-shift: {{ section.settings.nav_hover_shift }}px;
+    --header-nav-reveal-duration: {{ section.settings.nav_reveal_duration }}ms;
     --header-gutter: {{ section.settings.header_gutter }}px;
     --header-content-max: {{ section.settings.header_content_max }}px;
     --header-logo-width-mobile: {{ section.settings.logo_width_mobile }}px;
@@ -608,14 +608,14 @@
     },
     {
       "type": "range",
-      "id": "nav_hover_shift",
-      "label": "Menu hover shift",
+      "id": "nav_reveal_duration",
+      "label": "Menu hover reveal speed",
       "min": 0,
-      "max": 6,
-      "step": 1,
-      "unit": "px",
-      "default": 2,
-      "info": "How far the label drops on hover. 0 disables the movement."
+      "max": 600,
+      "step": 50,
+      "unit": "ms",
+      "default": 350,
+      "info": "How long the label takes to slide out and its copy to slide in. 0 makes the swap instant."
     },
     {
       "type": "range",

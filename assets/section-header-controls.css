@@ -75,8 +75,54 @@
 .header__menu-item:focus-visible {
   background-color: var(--header-nav-hover-background, #121212);
   color: var(--header-nav-hover-text, #ffffff);
-  transform: translateY(var(--header-nav-hover-shift, 2px));
   opacity: 1;
+}
+
+/*
+  Vertical text reveal
+  --------------------
+  On hover the label slides up out of the pill while an identical copy rises
+  into its place. Both layers move together, so the item's box never changes
+  size and the header stays completely still — only the text inside moves.
+
+  The second copy is a pseudo-element drawing data-nav-label with attr(),
+  rather than a duplicated span. That matters for accessibility: pseudo-element
+  content is not exposed to the accessibility tree, so the link is still
+  announced once rather than twice.
+
+  Only plain links get it. An item with a submenu carries a caret that would be
+  left behind by the slide, so those are excluded.
+*/
+.header__menu-item[data-nav-label] {
+  overflow: hidden;
+}
+
+.header__menu-item[data-nav-label] > span {
+  display: inline-block;
+  transition: transform var(--header-nav-reveal-duration, 350ms) ease-out;
+  will-change: transform;
+}
+
+.header__menu-item[data-nav-label]::after {
+  content: attr(data-nav-label);
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  transform: translateY(100%);
+  transition: transform var(--header-nav-reveal-duration, 350ms) ease-out;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.header__menu-item[data-nav-label]:hover > span,
+.header__menu-item[data-nav-label]:focus-visible > span {
+  transform: translateY(-100%);
+}
+
+.header__menu-item[data-nav-label]:hover::after,
+.header__menu-item[data-nav-label]:focus-visible::after {
+  transform: translateY(0);
 }
 
 /* The transparent header dims links on hover, which would fight the pill. */
@@ -103,13 +149,24 @@
   text-decoration: none;
 }
 
+/* The reveal is motion for its own sake, so it is dropped entirely rather than
+   shortened. The pill still marks the hovered item. */
 @media (prefers-reduced-motion: reduce) {
   .header__menu-item {
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 
-  .header__menu-item:hover,
-  .header__menu-item:focus-visible {
+  .header__menu-item[data-nav-label] > span,
+  .header__menu-item[data-nav-label]::after {
+    transition: none;
+  }
+
+  .header__menu-item[data-nav-label]::after {
+    content: none;
+  }
+
+  .header__menu-item[data-nav-label]:hover > span,
+  .header__menu-item[data-nav-label]:focus-visible > span {
     transform: none;
   }
 }

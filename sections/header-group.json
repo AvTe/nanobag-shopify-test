@@ -106,7 +106,7 @@
         "solid_opacity": 72,
         "nav_hover_background": "#121212",
         "nav_hover_text": "#ffffff",
-        "nav_hover_shift": 2
+        "nav_reveal_duration": 350
       }
     }
   },
