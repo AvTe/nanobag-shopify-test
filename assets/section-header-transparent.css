@@ -120,7 +120,9 @@
 */
 .header-wrapper--transparent.header-wrapper--solid,
 .header-wrapper--transparent:has(details[open]) {
-  background: rgb(var(--color-background) / var(--header-solid-opacity, 0.72));
+  /* rgba(), not the rgb( / ) slash form: Dawn stores --color-background as a
+     comma-separated triplet, which the slash syntax rejects outright. */
+  background: rgba(var(--color-background), var(--header-solid-opacity, 0.72));
   backdrop-filter: blur(var(--header-solid-blur, 14px)) saturate(1.6);
   -webkit-backdrop-filter: blur(var(--header-solid-blur, 14px)) saturate(1.6);
   transition: background-color 0.25s ease, backdrop-filter 0.25s ease;
@@ -140,7 +142,7 @@
 
 /* A hairline keeps the frosted bar from floating without an edge. */
 .header-wrapper--transparent.header-wrapper--solid {
-  border-block-end: 1px solid rgb(var(--color-foreground) / 0.08);
+  border-block-end: 1px solid rgba(var(--color-foreground), 0.08);
 }
 
 @media (prefers-reduced-motion: reduce) {

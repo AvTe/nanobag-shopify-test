@@ -50,11 +50,60 @@
   height: calc(var(--header-icon-size, 28px) * var(--header-icon-inset-scale, 2.14));
 }
 
-/* Inter Medium 18px, line-height 27px, from the desktop frame. */
+/* Inter Medium 18px, line-height 27px, from the desktop frame. The frame also
+   draws each item as a 42px pill with a 60px radius, which is what the hover
+   state below fills in. */
 .header__menu-item {
+  position: relative;
+  border-radius: 999px;
   font-size: var(--header-nav-size, 18px);
   font-weight: 500;
   line-height: 1.5;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+/*
+  Hover and keyboard focus get the same treatment, so the nav is not
+  mouse-only. The pill is painted on the item itself rather than a
+  pseudo-element, so it inherits the padding Dawn already sets and cannot
+  drift out of alignment with the text.
+*/
+.header__menu-item:hover,
+.header__menu-item:focus-visible {
+  background-color: var(--header-nav-hover-background, #121212);
+  color: var(--header-nav-hover-text, #ffffff);
+  transform: translateY(var(--header-nav-hover-shift, 2px));
+  opacity: 1;
+}
+
+/* The transparent header dims links on hover, which would fight the pill. */
+.header-wrapper--transparent .header__menu-item:hover,
+.header-wrapper--transparent .header__menu-item:focus-visible,
+.header-wrapper--solid.header-wrapper--transparent .header__menu-item:hover,
+.header-wrapper--solid.header-wrapper--transparent .header__menu-item:focus-visible {
+  background-color: var(--header-nav-hover-background, #121212);
+  color: var(--header-nav-hover-text, #ffffff);
+  opacity: 1;
+}
+
+/* Dawn underlines the current item; the pill already marks it. */
+.header__menu-item:hover .header__active-menu-item,
+.header__menu-item:focus-visible .header__active-menu-item {
+  text-decoration: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header__menu-item {
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .header__menu-item:hover,
+  .header__menu-item:focus-visible {
+    transform: none;
+  }
 }
 
 /* Centred menu

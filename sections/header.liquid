@@ -169,6 +169,9 @@
   style="
     --header-icon-size: {{ section.settings.icon_size }}px;
     --header-nav-size: {{ section.settings.nav_font_size }}px;
+    --header-nav-hover-background: {{ section.settings.nav_hover_background }};
+    --header-nav-hover-text: {{ section.settings.nav_hover_text }};
+    --header-nav-hover-shift: {{ section.settings.nav_hover_shift }}px;
     --header-gutter: {{ section.settings.header_gutter }}px;
     --header-content-max: {{ section.settings.header_content_max }}px;
     --header-logo-width-mobile: {{ section.settings.logo_width_mobile }}px;
@@ -590,6 +593,29 @@
       "step": 1,
       "unit": "px",
       "default": 18
+    },
+    {
+      "type": "color",
+      "id": "nav_hover_background",
+      "label": "Menu hover pill",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "nav_hover_text",
+      "label": "Menu hover text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "nav_hover_shift",
+      "label": "Menu hover shift",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "default": 2,
+      "info": "How far the label drops on hover. 0 disables the movement."
     },
     {
       "type": "range",

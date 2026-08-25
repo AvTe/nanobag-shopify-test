@@ -103,7 +103,10 @@
         "padding_top": 20,
         "padding_bottom": 20,
         "solid_blur": 14,
-        "solid_opacity": 72
+        "solid_opacity": 72,
+        "nav_hover_background": "#121212",
+        "nav_hover_text": "#ffffff",
+        "nav_hover_shift": 2
       }
     }
   },
