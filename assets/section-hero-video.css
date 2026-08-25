@@ -274,6 +274,39 @@
   justify-content: flex-start;
 }
 
+/* Copy scrim
+   ------------------------------------------------------------------
+   The flat overlay dims the whole frame evenly, which is fine over the dark
+   still used in the Figma frame but not over arbitrary video: on a bright
+   frame the rating line drops well under 4.5:1. This gradient darkens only
+   the side the copy sits on, so contrast holds without flattening the footage.
+
+   Desktop only, because on small screens the copy is in a card below the
+   media and has nothing to contrast against. */
+
+@media screen and (min-width: 750px) {
+  .hero-video__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: linear-gradient(
+      to right,
+      rgb(0 0 0 / var(--hero-scrim-opacity, 0.45)) 0%,
+      rgb(0 0 0 / 0) 60%
+    );
+    pointer-events: none;
+  }
+
+  .hero-video--align-center .hero-video__media::after {
+    background: radial-gradient(
+      ellipse at center,
+      rgb(0 0 0 / var(--hero-scrim-opacity, 0.45)) 0%,
+      rgb(0 0 0 / 0) 70%
+    );
+  }
+}
+
 /* Desktop reflow
    ------------------------------------------------------------------
    Media and content collapse into the same grid cell, the card styling is

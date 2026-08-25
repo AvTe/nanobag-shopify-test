@@ -66,6 +66,7 @@
     --hero-badge-size-mobile: {{ section.settings.badge_size_mobile }}px;
     --hero-media-radius: {{ section.settings.mobile_media_radius }}px;
     --hero-section-background: {{ section.settings.section_background }};
+    --hero-scrim-opacity: {{ section.settings.copy_scrim_opacity | divided_by: 100.0 }};
   "
 >
   <div class="hero-video__media">
@@ -263,6 +264,17 @@
       "unit": "%",
       "default": 0,
       "info": "The mobile frame has no overlay, because the copy sits below the media rather than on it."
+    },
+    {
+      "type": "range",
+      "id": "copy_scrim_opacity",
+      "label": "Copy contrast scrim",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 45,
+      "info": "Darkens only the side the copy sits on, on large screens. Raise it if the video is bright behind the text."
     },
     {
       "type": "color",

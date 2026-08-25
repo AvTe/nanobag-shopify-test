@@ -116,3 +116,24 @@
     display: none;
   }
 }
+
+/* Announcement bar
+   ------------------------------------------------------------------
+   Dawn sizes the bar purely from the message's 1rem padding, which lands at
+   38px. The desktop frame is 55px with a 16px message, so the height is set
+   on the row and the message centres inside it rather than defining it. */
+
+.utility-bar {
+  min-height: var(--announcement-height, 5.5rem);
+}
+
+.utility-bar__grid {
+  align-items: center;
+  min-height: var(--announcement-height, 5.5rem);
+}
+
+.announcement-bar__message {
+  padding-block: 0;
+  font-size: var(--announcement-font-size, 1.6rem);
+  letter-spacing: 0;
+}

@@ -64,7 +64,9 @@
         "show_line_separator": false,
         "show_social": true,
         "enable_country_selector": true,
-        "enable_language_selector": false
+        "enable_language_selector": false,
+        "bar_height": 55,
+        "message_size": 16
       }
     },
     "header": {
