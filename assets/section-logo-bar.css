@@ -10,20 +10,26 @@
 */
 
 /*
-  The panel is full-bleed and carries the background and the top radius, while
-  the row inside it is constrained to the page width. That is what the frame
-  shows: a white sheet spanning the viewport whose rounded corners read against
-  the hero behind it, not a floating card.
+  Two treatments, because the frames genuinely differ.
+
+  On a phone this is a fixed-height strip: 60px tall, a vertical wash from
+  #f5f2ec to white, hairline rules top and bottom, square corners, and logos
+  that overflow and scroll. On a large screen it is the full-bleed white sheet
+  whose rounded corners read against the hero it overlaps.
+
+  Same markup either way. Only the surface changes.
 */
 .logo-bar {
   --logo-bar-gap: clamp(2rem, 0.64rem + 3.6vw, 5.6rem);
 
   position: relative;
   z-index: 1;
-  padding-block: var(--logo-bar-padding-top, 0) var(--logo-bar-padding-bottom, 0);
-  border-start-start-radius: var(--logo-bar-radius, 30px);
-  border-start-end-radius: var(--logo-bar-radius, 30px);
-  background: var(--logo-bar-background, #fff);
+  border-block: 1px solid var(--logo-bar-strip-border, #e8ded1);
+  background: linear-gradient(
+    to bottom,
+    var(--logo-bar-strip-from, #f5f2ec),
+    var(--logo-bar-strip-to, #ffffff)
+  );
   color: var(--logo-bar-text, #121212);
 }
 
@@ -31,26 +37,37 @@
   display: flex;
   align-items: center;
   gap: var(--logo-bar-gap);
+  /* Fixed strip height on small screens, per the frame. */
+  min-height: var(--logo-bar-strip-height, 6rem);
   max-width: var(--page-width, 120rem);
   margin-inline: auto;
-  padding: clamp(1.6rem, 1.12rem + 1.4vw, 2.8rem) clamp(1.6rem, 0.8rem + 2.4vw, 4rem);
+  padding-inline: clamp(1.6rem, 0.8rem + 2.4vw, 4rem);
   overflow: hidden;
 }
 
-/* Pulled up over the section above so the rounded corners sit on the hero,
-   as they do in the frame. Only on large screens: on a phone the panel
-   follows other white content and has nothing to overlap. */
 @media screen and (min-width: 750px) {
   .logo-bar {
+    padding-block: var(--logo-bar-padding-top, 0) var(--logo-bar-padding-bottom, 0);
+    border-block: 0;
+    border-start-start-radius: var(--logo-bar-radius, 30px);
+    border-start-end-radius: var(--logo-bar-radius, 30px);
+    background: var(--logo-bar-background, #fff);
+    /* Pulled up so the rounded corners sit on the hero, as in the frame. */
     margin-block-start: calc(-1 * var(--logo-bar-overlap, 0px));
+  }
+
+  .logo-bar__card {
+    min-height: 0;
+    padding-block: clamp(1.6rem, 1.12rem + 1.4vw, 2.8rem);
   }
 }
 
 .logo-bar__eyebrow {
   flex: 0 0 auto;
   margin: 0;
-  font-size: clamp(0.8rem, 0.704rem + 0.26vw, 1.1rem);
-  font-weight: 700;
+  /* Inter Medium 12px on the mobile frame, SemiBold 16px on desktop. */
+  font-size: clamp(1.2rem, 1.14rem + 0.16vw, 1.6rem);
+  font-weight: 500;
   letter-spacing: 0.09em;
   line-height: 1.2;
   text-transform: uppercase;
@@ -102,7 +119,7 @@
      A fixed height gives the image an intrinsic width the flex row cannot
      reduce, so the track overflows and slides under the eyebrow instead of
      compressing. The Theme Editor value is the cap, not a fixed size. */
-  max-height: clamp(1.8rem, 1.1rem + 1.5vw, var(--logo-bar-logo-height, 3.4rem));
+  max-height: clamp(2.2rem, 1.5rem + 1.5vw, var(--logo-bar-logo-height, 3.4rem));
   max-width: 100%;
   width: auto;
   height: auto;

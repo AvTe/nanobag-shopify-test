@@ -1,63 +1,91 @@
 /*
   Video gallery
   -------------
-  A single scroll-snapping row at every viewport. On a phone the items overflow
-  and the row scrolls; on a wide screen they all fit and the row centres. That
-  is one behaviour reacting to available width rather than a mobile carousel
-  and a desktop grid, so there is no breakpoint here at all.
+  A peek carousel: one card centred, its neighbours clipped by the viewport
+  edges. Measured from the Figma mobile frame, every card is the same
+  191.81 x 287.72 box, so the centre card is dominant purely because it is the
+  only one fully visible. Nothing is scaled, which is why this needs no
+  JavaScript: CSS scroll-snap alone reproduces the frame.
 
-  Playback is Dawn's own <deferred-media>, so this section ships no JavaScript.
+  The scroller is padded by half the leftover width so the first and last
+  cards can still reach the centre, which is what makes the snap feel right
+  at both ends rather than jamming against the edge.
+
+  Playback is Dawn's own <deferred-media>, so this section ships no JS at all.
+
   Note: Dawn sets html { font-size: 10px }, so 1rem is 10px here, not 16px.
-  Every rem below is written against that root.
 */
 
 .video-gallery {
-  /* 20px at 375px, 48px at 1440px, matching the live theme gutter. */
-  padding-inline: clamp(2rem, 0.96rem + 2.2vw, 4.8rem);
+  /* 191.81 / 390 from the frame. */
+  --video-gallery-card: 49.2%;
+  --video-gallery-gap: clamp(1rem, 0.75rem + 0.7vw, 1.6rem);
+
   padding-block: var(--video-gallery-padding-top, 0) var(--video-gallery-padding-bottom, 0);
   background: var(--video-gallery-background, #fff);
   color: var(--video-gallery-text, #121212);
 }
 
+/* The scroller runs edge to edge so the neighbouring cards can be clipped by
+   the viewport, which is what creates the peek. Only the heading and the CTA
+   are inset. */
 .video-gallery__inner {
   max-width: var(--page-width, 120rem);
   margin-inline: auto;
 }
 
 .video-gallery__heading {
-  margin: 0 0 clamp(1.6rem, 1.12rem + 1.4vw, 3.2rem);
-  font-size: clamp(2.4rem, 1.76rem + 1.7vw, 4.4rem);
-  font-weight: 700;
-  line-height: 1.05;
+  padding-inline: clamp(2rem, 0.96rem + 2.2vw, 4.8rem);
+}
+
+.video-gallery__heading {
+  /* Inter SemiBold 30px, -1.6px, line-height 1.2 in the frame. */
+  margin: 0 0 clamp(1.6rem, 1.2rem + 1.6vw, 3.2rem);
+  font-size: clamp(3rem, 2.7rem + 0.8vw, 4rem);
+  font-weight: 600;
+  letter-spacing: -0.053em;
+  line-height: 1.2;
   text-align: center;
   text-wrap: balance;
 }
 
+/* Carousel
+   ------------------------------------------------------------------ */
+
 .video-gallery__grid {
   display: flex;
-  gap: clamp(1rem, 0.56rem + 1.2vw, 2rem);
+  gap: var(--video-gallery-gap);
   margin: 0;
-  padding: 0 0 0.8rem;
+  /* Half the leftover width, so an end card can still centre itself. */
+  padding: 0 calc((100% - var(--video-gallery-card)) / 2) 0.8rem;
   list-style: none;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  /* safe keeps the first item reachable once the row overflows. Plain centre
-     would push it past the scroll origin and make it unscrollable to. */
-  justify-content: safe center;
-  scrollbar-width: thin;
+  scroll-padding-inline: calc((100% - var(--video-gallery-card)) / 2);
   overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.video-gallery__grid::-webkit-scrollbar {
+  display: none;
 }
 
 .video-gallery__item {
-  flex: 0 0 clamp(12rem, 8rem + 24vw, 24rem);
+  /* 100%, not --video-gallery-card. Percentage padding on the scroller
+     resolves against its full width, so the content box it leaves behind is
+     already exactly one card wide. Using the variable here would apply the
+     fraction twice and halve the card. */
+  flex: 0 0 100%;
   scroll-snap-align: center;
+  scroll-snap-stop: always;
 }
 
 .video-gallery__media {
   display: block;
   position: relative;
-  aspect-ratio: var(--video-gallery-ratio, 9 / 16);
-  border-radius: clamp(1rem, 0.64rem + 0.9vw, 1.6rem);
+  /* 191.81 x 287.72 in the frame. */
+  aspect-ratio: var(--video-gallery-ratio, 2 / 3);
+  border-radius: var(--video-gallery-card-radius, 2rem);
   overflow: hidden;
   background: #000;
 }
@@ -79,8 +107,11 @@
   outline-offset: -4px;
 }
 
-.video-gallery__image,
-.video-gallery__video {
+/* Scoped to the poster to clear Dawn's own .deferred-media__poster img rule,
+   which is one specificity point higher and sets width: auto. Left unscoped,
+   the poster sits narrower than its card and leaves a black band. */
+.video-gallery__poster .video-gallery__image,
+.video-gallery__media .video-gallery__video {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -88,12 +119,28 @@
   object-fit: cover;
 }
 
-/* Dawn draws the play affordance; it only needs centring inside this box. */
+/* Play button: 64px circle, 2px white ring, 24px glyph. */
 .video-gallery__media .deferred-media__poster-button {
   position: absolute;
   top: 50%;
   left: 50%;
+  display: grid;
+  place-items: center;
+  width: var(--video-gallery-play-size, 6.4rem);
+  height: var(--video-gallery-play-size, 6.4rem);
   transform: translate(-50%, -50%);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  box-shadow: none;
+}
+
+.video-gallery__media .deferred-media__poster-button .svg-wrapper,
+.video-gallery__media .deferred-media__poster-button svg {
+  width: 2.4rem;
+  height: 2.4rem;
+  fill: currentcolor;
 }
 
 /* Call to action
@@ -103,15 +150,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: fit-content;
-  min-height: 4.4rem; /* 44px tap target */
-  margin: clamp(2rem, 1.44rem + 1.6vw, 3.6rem) auto 0;
-  padding: clamp(1.2rem, 0.992rem + 0.53vw, 1.6rem) clamp(3.2rem, 2.24rem + 2.55vw, 5.2rem);
+  /* 326 / 390 in the frame. */
+  width: min(var(--video-gallery-cta-width, 83.6%), 44rem);
+  min-height: max(4.4rem, var(--video-gallery-cta-height, 5.2rem));
+  margin: clamp(2rem, 1.5rem + 2vw, 3.6rem) auto 0;
+  padding-inline: 2rem;
+  border: 2px solid var(--video-gallery-cta-border, #ffffff);
   border-radius: 999px;
   background: var(--video-gallery-cta-background, #cc253e);
   color: var(--video-gallery-cta-text, #fff);
-  font-size: clamp(1.5rem, 1.408rem + 0.23vw, 1.7rem);
-  font-weight: 600;
+  font-size: 1.6rem;
+  font-weight: 700;
   line-height: 1;
   text-decoration: none;
   transition: transform 0.15s ease, filter 0.15s ease;

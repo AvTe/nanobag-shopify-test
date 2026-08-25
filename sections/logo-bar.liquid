@@ -18,6 +18,10 @@
     --logo-bar-padding-top: {{ section.settings.padding_top }}px;
     --logo-bar-padding-bottom: {{ section.settings.padding_bottom }}px;
     --logo-bar-overlap: {{ section.settings.overlap_previous }}px;
+    --logo-bar-strip-height: {{ section.settings.strip_height }}px;
+    --logo-bar-strip-from: {{ section.settings.strip_gradient_from }};
+    --logo-bar-strip-to: {{ section.settings.strip_gradient_to }};
+    --logo-bar-strip-border: {{ section.settings.strip_border }};
   "
 >
   <div class="logo-bar__card">
@@ -154,6 +158,35 @@
     {
       "type": "header",
       "content": "Small screens"
+    },
+    {
+      "type": "range",
+      "id": "strip_height",
+      "label": "Strip height",
+      "min": 40,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 60,
+      "info": "Fixed height of the bordered strip on small screens."
+    },
+    {
+      "type": "color",
+      "id": "strip_gradient_from",
+      "label": "Strip gradient top",
+      "default": "#f5f2ec"
+    },
+    {
+      "type": "color",
+      "id": "strip_gradient_to",
+      "label": "Strip gradient bottom",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "strip_border",
+      "label": "Strip border",
+      "default": "#e8ded1"
     },
     {
       "type": "checkbox",

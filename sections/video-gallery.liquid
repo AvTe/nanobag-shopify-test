@@ -9,6 +9,11 @@
     --video-gallery-cta-background: {{ section.settings.cta_background }};
     --video-gallery-cta-text: {{ section.settings.cta_text_color }};
     --video-gallery-ratio: {{ section.settings.media_ratio }};
+    --video-gallery-card: {{ section.settings.card_width }}%;
+    --video-gallery-card-radius: {{ section.settings.card_radius }}px;
+    --video-gallery-play-size: {{ section.settings.play_size }}px;
+    --video-gallery-cta-width: {{ section.settings.cta_width }}%;
+    --video-gallery-cta-border: {{ section.settings.cta_border }};
     --video-gallery-padding-top: {{ section.settings.padding_top }}px;
     --video-gallery-padding-bottom: {{ section.settings.padding_bottom }}px;
   "
@@ -151,6 +156,10 @@
       "label": "Video shape",
       "options": [
         {
+          "value": "2 / 3",
+          "label": "Card (2:3)"
+        },
+        {
           "value": "9 / 16",
           "label": "Vertical (9:16)"
         },
@@ -163,7 +172,38 @@
           "label": "Square"
         }
       ],
-      "default": "9 / 16"
+      "default": "2 / 3"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card width",
+      "min": 30,
+      "max": 90,
+      "step": 1,
+      "unit": "%",
+      "default": 49,
+      "info": "Share of the row each card takes. Lower values show more of the neighbouring cards."
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "play_size",
+      "label": "Play button size",
+      "min": 40,
+      "max": 96,
+      "step": 2,
+      "unit": "px",
+      "default": 64
     },
     {
       "type": "color",
@@ -187,6 +227,22 @@
       "type": "color",
       "id": "cta_text_color",
       "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "cta_width",
+      "label": "Button width",
+      "min": 40,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 84
+    },
+    {
+      "type": "color",
+      "id": "cta_border",
+      "label": "Button border",
       "default": "#ffffff"
     },
     {

@@ -111,12 +111,16 @@
         "card_background": "#ffffff",
         "text_color": "#121212",
         "card_radius": 40,
-        "logo_height": 34,
+        "logo_height": 28,
         "enable_marquee_mobile": true,
         "marquee_speed": 30,
         "padding_top": 0,
         "padding_bottom": 24,
-        "overlap_previous": 48
+        "overlap_previous": 48,
+        "strip_height": 60,
+        "strip_gradient_from": "#f5f2ec",
+        "strip_gradient_to": "#ffffff",
+        "strip_border": "#e8ded1"
       }
     },
     "feature_trio": {
@@ -218,21 +222,26 @@
         "heading": "See it in action",
         "cta_text": "Choose your Nanobag",
         "cta_link": "",
-        "media_ratio": "9 / 16",
+        "media_ratio": "2 / 3",
         "background_color": "#ffffff",
         "text_color": "#121212",
         "cta_background": "#cc253e",
         "cta_text_color": "#ffffff",
         "padding_top": 24,
         "padding_bottom": 32,
-        "visibility": "small"
+        "visibility": "small",
+        "card_width": 49,
+        "card_radius": 20,
+        "play_size": 64,
+        "cta_width": 84,
+        "cta_border": "#ffffff"
       }
     }
   },
   "order": [
     "hero_video",
-    "logo_bar",
     "feature_trio",
+    "logo_bar",
     "video_gallery"
   ]
 }
