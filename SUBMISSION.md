@@ -117,6 +117,17 @@ and wrote the old value back to the repo, which then synced onto the theme again
 The fix is to correct it on the side the sync reads from — the repository — not
 on the theme.
 
+## 1.6 Time taken
+
+**Roughly six hours in total**, covering the build, the store SEO setup and both
+audits.
+
+That was not six hours in one sitting. I worked in blocks — sometimes thirty
+minutes, sometimes closer to two — coming back to it across the day. Some of that
+was deliberate: stepping away and returning to the page with fresh eyes is how I
+caught several of the visual mismatches, and a couple of the bugs in §1.5 only
+became obvious on a re-check rather than in the moment I wrote the code.
+
 ---
 
 # 2. What I built
@@ -154,6 +165,39 @@ The detailed reasoning behind each choice is in
   `<deferred-media>`. The carousel is pure CSS scroll-snap: measured from the
   frame, all four cards are the same size, and the centre only *reads* as
   dominant because it is the only one fully visible.
+
+## 2.1 SEO setup on the test store
+
+The home page is not just built, it is set up. It would have been easy to hand
+over a page that looks right and ships a seven-character `<title>` and no meta
+description — I did the store-side configuration too, and then verified it on the
+live storefront rather than assuming the admin fields had taken effect.
+
+| | Value on the live store |
+| --- | --- |
+| Home page title | "Reusable Bags That Fit in Your Pocket \| Nanobag" — **57 chars**, within the 70 limit |
+| Meta description | **153 chars**, names the product and the use cases |
+| Social sharing image | set — `og:image` present |
+| Open Graph / Twitter | `og:title`, `og:description`, `og:image`, `twitter:card` all present |
+| Canonical | `https://nanobags.myshopify.com/` |
+| `<h1>` count | **1** — "Extreme practicality" |
+| Structured data | `Organization` + `WebSite` |
+| Images | 23 total, **1** without `alt`, **1** without dimensions |
+| Horizontal overflow | **none**, 390 → 2827px |
+| Liquid errors | **none** |
+
+Two of those are worth calling out because they are the faults I report against
+nanobag.com in §4, and it would be poor form to commit them here:
+
+- **One `<h1>`.** Dawn wraps the logo in an `<h1>` on the home page, which
+  together with the hero heading meant two. That wrap is now behind a setting,
+  defaulted off, so the hero owns the only `<h1>`.
+- **No duplicated markup.** Six logo images for six logos, one autoplaying video,
+  and every heading present in the initial HTML rather than revealed by script.
+
+The single remaining `img` without `alt` is the poster Shopify generates inside
+its own `<video>` output, which the theme does not control. It is decorative and
+the heading carries the meaning.
 
 ---
 
@@ -459,6 +503,13 @@ comparing:
 | No unnecessary apps or libraries | No `package.json`, no `node_modules`, no external requests from my sections |
 | Page speed / avoid heavy JavaScript | **97 lines total**; the gallery ships none |
 | Accessibility | One `<h1>`; single `role="img"` rating; 44px tap targets enforced with `max()`; `prefers-reduced-motion` honoured throughout; full keyboard path |
+
+Beyond Part 1, the store's own SEO is configured and verified — title, meta
+description, social sharing image, Open Graph and Twitter tags, canonical, single
+`<h1>` and image alt text. See §2.1.
+
+**Time taken: roughly six hours in total**, spread across the day in blocks
+rather than one continuous sitting. See §1.6.
 
 ---
 
