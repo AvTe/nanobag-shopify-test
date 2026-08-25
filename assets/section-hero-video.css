@@ -89,7 +89,14 @@
   /* 20px at 375px, 48px at 1440px, matching the live theme gutter. */
   padding-inline: clamp(2rem, 0.96rem + 2.2vw, 4.8rem);
   padding-block: clamp(2.4rem, 1.6rem + 3vw, 4.8rem);
-  border-radius: var(--hero-card-radius);
+  /* Top corners only. The card's bottom sits flush on the section edge with
+     the next white section directly beneath, so rounding the bottom lets the
+     dark section background show through as two notches instead of reading as
+     one continuous white surface. The frame's card is a single sheet spanning
+     the copy, the benefits and the description; here that surface is made of
+     adjacent sections, so only the top corners are ever against dark. */
+  border-start-start-radius: var(--hero-card-radius);
+  border-start-end-radius: var(--hero-card-radius);
   background: var(--hero-card-background, #fff);
   color: var(--hero-copy-color);
 }
