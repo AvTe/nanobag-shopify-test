@@ -85,16 +85,33 @@ GitHub-connected theme, so I could iterate freely without publishing anything.
 
 ## 1.4 How I actually worked
 
-1. **Read the Figma properly.** I connected the Figma MCP server and pulled the
+1. **Worked from my own copy of the Figma, not the shared file.** The first thing
+   I did was duplicate the supplied file into my own Figma workspace. I never
+   edited the original.
+
+   That is partly courtesy — a shared design file is not mine to reorganise — but
+   mostly it is practical. In my own copy I could move frames next to each other
+   to compare desktop against mobile, zoom into a component without disturbing
+   anyone, and select and export any icon, logo or image directly. Working that
+   way is how the press logos and the badge came out of the design cleanly rather
+   than being approximated from a screenshot.
+
+2. **Read the Figma properly.** I connected the Figma MCP server and pulled the
    real node data rather than working from screenshots. That is where most of the
    accuracy came from — exact values like the 79px desktop headline, the 20%
    overlay, the 191.81 × 287.72 carousel cards, and the 55px announcement bar came
    straight out of the file.
-2. **Build the section**, keeping everything that is content in `{% schema %}`.
-3. **Verify in a real browser.** I drove Chrome through DevTools and measured
+
+   It also settled questions a screenshot could not. The desktop and mobile frames
+   genuinely disagree — different fonts for the headline, an overlay on one and
+   not the other, different CTA labels — and only the file could tell me which
+   differences were real and which were my eyes.
+
+3. **Build the section**, keeping everything that is content in `{% schema %}`.
+4. **Verify in a real browser.** I drove Chrome through DevTools and measured
    computed styles and bounding boxes at 390 / 820 / 1440 / 1920 / 2827px.
-4. **`shopify theme check`** before every commit — zero errors is the bar.
-5. **Commit small and explain why**, not what.
+5. **`shopify theme check`** before every commit — zero errors is the bar.
+6. **Commit small and explain why**, not what.
 
 ## 1.5 Two things the pipeline taught me
 
