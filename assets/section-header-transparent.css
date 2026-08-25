@@ -82,7 +82,8 @@
   fill: currentcolor;
 }
 
-.header-wrapper--transparent .header__menu-item:hover,
+/* Icons dim on hover. Menu items do not: they get the solid pill instead, and
+   dimming the element would take the pill down with it. */
 .header-wrapper--transparent .header__icon:hover {
   color: var(--header-transparent-text, #fff);
   opacity: 0.75;

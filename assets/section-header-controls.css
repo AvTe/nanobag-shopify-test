@@ -89,9 +89,17 @@
   opacity: 1;
 }
 
-/* Dawn underlines the current item; the pill already marks it. */
-.header__menu-item:hover .header__active-menu-item,
-.header__menu-item:focus-visible .header__active-menu-item {
+/*
+  Dawn underlines on hover via .header__menu-item:hover span, on the span
+  inside the item rather than the item itself. The pill already marks the
+  hovered item, so the underline is redundant and sits awkwardly inside it.
+  Matched at the same depth plus one so it wins regardless of load order.
+*/
+.header-wrapper .header__menu-item:hover span,
+.header-wrapper .header__menu-item:focus-visible span,
+.header-wrapper details[open] > .header__menu-item,
+.header-wrapper .header__menu-item:hover .header__active-menu-item,
+.header-wrapper .header__menu-item:focus-visible .header__active-menu-item {
   text-decoration: none;
 }
 
