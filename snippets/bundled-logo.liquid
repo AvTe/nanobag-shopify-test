@@ -1,0 +1,57 @@
+{%- comment -%}
+  Renders one of the press logos that ship with the theme.
+
+  These exist so the section looks right the moment it is added, without the
+  merchant having to source six files first. The block's own image picker
+  always wins, so nothing here is baked in: choosing an image replaces the
+  bundled one, and setting the logo to None removes it.
+
+  Intrinsic width and height are passed so the browser reserves the correct
+  box before the file arrives. Without them a row of logos reflows sideways
+  as each one loads.
+
+  Accepts:
+  - key:   {String} which bundled logo to draw
+  - alt:   {String} alt text from the block
+{%- endcomment -%}
+
+{%- liquid
+  case key
+    when 'forbes'
+      assign file = 'logo-forbes.png'
+      assign w = 2400
+      assign h = 628
+    when 'grommet'
+      assign file = 'logo-grommet.jpg'
+      assign w = 2775
+      assign h = 450
+    when 'trendhunter'
+      assign file = 'logo-trendhunter.svg'
+      assign w = 198
+      assign h = 57
+    when 'gadgetflow'
+      assign file = 'logo-gadgetflow.png'
+      assign w = 1583
+      assign h = 371
+    when 'techiwant'
+      assign file = 'logo-techiwant.png'
+      assign w = 1089
+      assign h = 315
+    when 'indiegogo'
+      assign file = 'logo-indiegogo.png'
+      assign w = 1769
+      assign h = 434
+  endcase
+-%}
+
+{%- if file -%}
+  <img
+    class="logo-bar__image"
+    src="{{ file | asset_url }}"
+    alt="{{ alt | escape }}"
+    width="{{ w }}"
+    height="{{ h }}"
+    loading="lazy"
+    decoding="async"
+  >
+{%- endif -%}

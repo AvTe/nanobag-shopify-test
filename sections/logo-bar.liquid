@@ -17,6 +17,7 @@
     --logo-bar-duration: {{ section.settings.marquee_speed }}s;
     --logo-bar-padding-top: {{ section.settings.padding_top }}px;
     --logo-bar-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --logo-bar-overlap: {{ section.settings.overlap_previous }}px;
   "
 >
   <div class="logo-bar__card">
@@ -41,7 +42,9 @@
       >
         {%- for block in section.blocks -%}
           <li class="logo-bar__item" {{ block.shopify_attributes }}>
-            {%- if block.settings.image != blank -%}
+            {%- if block.settings.image == blank and block.settings.bundled_logo != 'none' -%}
+              {%- render 'bundled-logo', key: block.settings.bundled_logo, alt: block.settings.image_alt -%}
+            {%- elsif block.settings.image != blank -%}
               {%- capture logo_image -%}
                 {{
                   block.settings.image
@@ -76,7 +79,9 @@
         <ul class="logo-bar__track logo-bar__track--clone" aria-hidden="true" role="presentation">
           {%- for block in section.blocks -%}
             <li class="logo-bar__item">
-              {%- if block.settings.image != blank -%}
+              {%- if block.settings.image == blank and block.settings.bundled_logo != 'none' -%}
+                {%- render 'bundled-logo', key: block.settings.bundled_logo, alt: '' -%}
+              {%- elsif block.settings.image != blank -%}
                 {{
                   block.settings.image
                   | image_url: width: 400
@@ -174,6 +179,17 @@
     },
     {
       "type": "range",
+      "id": "overlap_previous",
+      "label": "Overlap the section above",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "info": "Pulls the panel up so its rounded corners sit on the hero. Large screens only."
+    },
+    {
+      "type": "range",
       "id": "padding_top",
       "label": "Top padding",
       "min": 0,
@@ -204,6 +220,43 @@
           "label": "Logo"
         },
         {
+          "type": "select",
+          "id": "bundled_logo",
+          "label": "Bundled logo",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "forbes",
+              "label": "Forbes"
+            },
+            {
+              "value": "grommet",
+              "label": "Grommet"
+            },
+            {
+              "value": "trendhunter",
+              "label": "TrendHunter"
+            },
+            {
+              "value": "gadgetflow",
+              "label": "GadgetFlow"
+            },
+            {
+              "value": "techiwant",
+              "label": "Tech I Want"
+            },
+            {
+              "value": "indiegogo",
+              "label": "Indiegogo"
+            }
+          ],
+          "default": "none",
+          "info": "Ships with the theme. Only used when no image is chosen above, so uploading an image always wins."
+        },
+        {
           "type": "text",
           "id": "image_alt",
           "label": "Alt text",
@@ -223,22 +276,46 @@
       "name": "Logo bar",
       "blocks": [
         {
-          "type": "logo"
+          "type": "logo",
+          "settings": {
+            "bundled_logo": "forbes",
+            "image_alt": "Forbes"
+          }
         },
         {
-          "type": "logo"
+          "type": "logo",
+          "settings": {
+            "bundled_logo": "grommet",
+            "image_alt": "Grommet"
+          }
         },
         {
-          "type": "logo"
+          "type": "logo",
+          "settings": {
+            "bundled_logo": "trendhunter",
+            "image_alt": "TrendHunter"
+          }
         },
         {
-          "type": "logo"
+          "type": "logo",
+          "settings": {
+            "bundled_logo": "gadgetflow",
+            "image_alt": "GadgetFlow"
+          }
         },
         {
-          "type": "logo"
+          "type": "logo",
+          "settings": {
+            "bundled_logo": "techiwant",
+            "image_alt": "Tech I Want"
+          }
         },
         {
-          "type": "logo"
+          "type": "logo",
+          "settings": {
+            "bundled_logo": "indiegogo",
+            "image_alt": "Indiegogo"
+          }
         }
       ]
     }

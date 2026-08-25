@@ -9,11 +9,22 @@
   Every rem below is written against that root.
 */
 
+/*
+  The panel is full-bleed and carries the background and the top radius, while
+  the row inside it is constrained to the page width. That is what the frame
+  shows: a white sheet spanning the viewport whose rounded corners read against
+  the hero behind it, not a floating card.
+*/
 .logo-bar {
   --logo-bar-gap: clamp(2rem, 0.64rem + 3.6vw, 5.6rem);
 
-  padding-inline: clamp(1.2rem, 0.48rem + 2vw, 2.4rem);
+  position: relative;
+  z-index: 1;
   padding-block: var(--logo-bar-padding-top, 0) var(--logo-bar-padding-bottom, 0);
+  border-start-start-radius: var(--logo-bar-radius, 30px);
+  border-start-end-radius: var(--logo-bar-radius, 30px);
+  background: var(--logo-bar-background, #fff);
+  color: var(--logo-bar-text, #121212);
 }
 
 .logo-bar__card {
@@ -23,10 +34,16 @@
   max-width: var(--page-width, 120rem);
   margin-inline: auto;
   padding: clamp(1.6rem, 1.12rem + 1.4vw, 2.8rem) clamp(1.6rem, 0.8rem + 2.4vw, 4rem);
-  border-radius: var(--logo-bar-radius, 30px);
-  background: var(--logo-bar-background, #fff);
-  color: var(--logo-bar-text, #121212);
   overflow: hidden;
+}
+
+/* Pulled up over the section above so the rounded corners sit on the hero,
+   as they do in the frame. Only on large screens: on a phone the panel
+   follows other white content and has nothing to overlap. */
+@media screen and (min-width: 750px) {
+  .logo-bar {
+    margin-block-start: calc(-1 * var(--logo-bar-overlap, 0px));
+  }
 }
 
 .logo-bar__eyebrow {
@@ -81,9 +98,14 @@
    sit on a common optical baseline without being distorted. */
 .logo-bar__image {
   display: block;
-  height: var(--logo-bar-logo-height, 26px);
+  /* Sized by max-height rather than height, with max-width free to shrink.
+     A fixed height gives the image an intrinsic width the flex row cannot
+     reduce, so the track overflows and slides under the eyebrow instead of
+     compressing. The Theme Editor value is the cap, not a fixed size. */
+  max-height: clamp(1.8rem, 1.1rem + 1.5vw, var(--logo-bar-logo-height, 3.4rem));
+  max-width: 100%;
   width: auto;
-  max-width: none;
+  height: auto;
   object-fit: contain;
 }
 
@@ -120,14 +142,22 @@
 @media screen and (min-width: 750px) {
   .logo-bar__viewport {
     overflow: visible;
-    justify-content: center;
+    justify-content: flex-end;
   }
 
+  /* The frame runs the eyebrow at the left and spreads the logos across the
+     rest of the row, so this is space-between on a single line rather than a
+     centred group that can wrap. */
   .logo-bar__track {
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: clamp(1.2rem, 0.4rem + 1.6vw, 3.2rem);
+  }
+
+  .logo-bar__item {
     flex: 0 1 auto;
-    flex-wrap: wrap;
-    justify-content: center;
-    row-gap: clamp(1.2rem, 0.8rem + 1vw, 2rem);
+    min-width: 0;
   }
 
   .logo-bar__track--clone {
