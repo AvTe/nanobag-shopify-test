@@ -123,18 +123,27 @@
    38px. The desktop frame is 55px with a 16px message, so the height is set
    on the row and the message centres inside it rather than defining it. */
 
+/* The frames differ: 48px tall with a 13px message on the 390px mobile frame,
+   55px with 16px on the 1920px desktop one. Both scale between those, with the
+   Theme Editor values acting as the upper bound. Applying the desktop values
+   at every width wrapped the message onto two lines on a phone. */
+
 .utility-bar {
-  min-height: var(--announcement-height, 5.5rem);
+  min-height: clamp(4.8rem, 4.3rem + 0.6vw, var(--announcement-height, 5.5rem));
+  /* The carousel parks its inactive slides to the right of the track, which
+     leaked a few pixels past the document. overflow-x: clip rather than hidden
+     so the localisation dropdown can still open downward. */
+  overflow-x: clip;
 }
 
 .utility-bar__grid {
   align-items: center;
-  min-height: var(--announcement-height, 5.5rem);
+  min-height: clamp(4.8rem, 4.3rem + 0.6vw, var(--announcement-height, 5.5rem));
 }
 
 .announcement-bar__message {
   padding-block: 0;
-  font-size: var(--announcement-font-size, 1.6rem);
+  font-size: clamp(1.3rem, 1.2rem + 0.2vw, var(--announcement-font-size, 1.6rem));
   letter-spacing: 0;
 }
 
@@ -161,4 +170,35 @@
     var(--header-gutter, 4.8rem),
     calc(50vw - var(--header-content-max, 190rem) / 2)
   );
+}
+
+/* Announcement bar width
+   ------------------------------------------------------------------
+   The bar spans the viewport but its row was capped at the theme page width
+   and centred, so on a 2100px screen the social icons sat 488px in and the
+   announcement column was squeezed to 440px.
+
+   Dawn pads that row from
+   body:has(.section-header .header:not(.drawer-menu)) .utility-bar .page-width,
+   which is (0,5,1) and beats anything reasonable. Rather than escalate, the
+   markup drops the page-width class and this owns the row instead: the grid
+   columns come from .utility-bar__grid, never from .page-width, so nothing
+   else is lost. Gutters match the header exactly. */
+
+.utility-bar__row {
+  max-width: none;
+  margin-inline: auto;
+  padding-inline: max(
+    var(--header-gutter, 4.8rem),
+    calc(50vw - var(--header-content-max, 190rem) / 2)
+  );
+}
+
+/* Below the point where the three-column row engages there is only the
+   announcement, and the prev/next buttons need the width more than the
+   gutters do. */
+@media screen and (max-width: 749px) {
+  .utility-bar__row {
+    padding-inline: 1.2rem;
+  }
 }

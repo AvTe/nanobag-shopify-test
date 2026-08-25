@@ -353,6 +353,14 @@
     padding-block: clamp(4.8rem, 3.2rem + 4vw, 9.6rem);
     border-radius: 0;
     background: none;
+
+    /* The copy sat in a centred 1200px box, so every pixel the viewport grew
+       pushed it half a pixel further right: 498px from the edge at 2100px
+       against the frame's 249px. The frame puts the copy at 228 of 1920,
+       which is 11.875%, so the inset is proportional and holds that ratio at
+       any width. Capped at 300px so it stops travelling on ultrawide. */
+    max-width: none;
+    padding-inline: clamp(4.8rem, 11.875vw, 30rem);
   }
 
   .hero-video__badge {
