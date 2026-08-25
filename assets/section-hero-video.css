@@ -1,46 +1,46 @@
-/* ==========================================================================
-   Hero video
+/*
+  Hero video
+  ----------
+  Mobile first. The two frames are not the same layout at two sizes: on mobile
+  the copy sits in a white card below the media, on desktop it is overlaid on
+  the media. That is a genuine structural reflow, so it earns the one media
+  query in this file.
 
-   One markup tree, two layouts.
+  It is still a single markup tree. The reflow is done by moving the media and
+  the content into the same grid cell at the desktop breakpoint rather than by
+  rendering the block twice. Everything else scales with clamp().
 
-   Small screens : media block, then a rounded card of copy below it.
-   Large screens : the same card becomes a transparent overlay sitting in the
-                   same grid cell as the media.
-
-   No element is duplicated for a breakpoint. The grid template does the work.
-   ========================================================================== */
+  Note: Dawn sets html { font-size: 10px }, so 1rem is 10px here, not 16px.
+  Every rem below is written against that root.
+*/
 
 .hero-video {
-  --hero-gutter: clamp(1.25rem, 0.6rem + 3vw, 4rem);
+  --hero-card-radius: 2.8rem;
+  --hero-card-overlap: clamp(2.4rem, 1.6rem + 2.2vw, 4.4rem);
 
-  display: grid;
-  grid-template-areas:
-    'media'
-    'copy';
-  grid-template-columns: 1fr;
+  /* One inherited property carries the copy colour to every descendant, so
+     the mobile card and the desktop overlay cannot disagree. */
+  --hero-copy-color: var(--hero-card-text, #121212);
+
   position: relative;
+  display: grid;
   isolation: isolate;
-  background: var(--hero-section-background, #121212);
+  /* Sits behind the media. On small screens the media has rounded top corners,
+     so this is what shows through them: matching the announcement bar above
+     makes the two read as one surface instead of a white seam. */
+  background: var(--hero-section-background, transparent);
 }
 
-/* --------------------------------------------------------------------------
-   Media
-   -------------------------------------------------------------------------- */
+/* Media
+   ------------------------------------------------------------------ */
 
 .hero-video__media {
-  grid-area: media;
   position: relative;
-  overflow: hidden;
+  grid-row: 1;
   aspect-ratio: var(--hero-mobile-ratio, 3 / 4);
-  max-height: 76svh;
-  border-end-start-radius: var(--hero-media-radius, 30px);
-  border-end-end-radius: var(--hero-media-radius, 30px);
-  background: #0d0d0d;
-}
-
-/* <picture> is inline by default and would break the absolute fill. */
-.hero-video__picture {
-  display: contents;
+  overflow: hidden;
+  border-start-start-radius: var(--hero-media-radius, 0);
+  border-start-end-radius: var(--hero-media-radius, 0);
 }
 
 .hero-video__poster,
@@ -50,29 +50,17 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
+}
+
+/* The video carries no poster attribute, so it paints transparent until its
+   first frame and the image below shows through. No JavaScript cross-fade. */
+.hero-video__media-video {
+  z-index: 1;
   border: 0;
 }
 
-.hero-video__player {
-  position: absolute;
-  inset: 0;
-  display: block;
-  z-index: 1;
-}
-
-.hero-video__media-video {
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  pointer-events: none;
-}
-
-/* Revealed only once a frame is decodable, so the poster is never swapped for
-   a blank box mid-load. */
-responsive-video[data-ready='true'] .hero-video__media-video {
-  opacity: 1;
-}
-
+/* A sibling element rather than a pseudo-element, so it sits unambiguously
+   between the media and the content in the stacking order. */
 .hero-video__overlay {
   position: absolute;
   inset: 0;
@@ -82,336 +70,341 @@ responsive-video[data-ready='true'] .hero-video__media-video {
   pointer-events: none;
 }
 
-/* Directional scrim behind the copy on large screens only. */
-.hero-video__scrim {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* --------------------------------------------------------------------------
-   Copy
-   -------------------------------------------------------------------------- */
+/* Content
+   ------------------------------------------------------------------ */
 
 .hero-video__inner {
-  grid-area: copy;
-  position: relative;
+  /* Deliberately not positioned. A grid item takes z-index without position,
+     and leaving this static keeps .hero-video as the containing block for the
+     absolutely positioned badge, which otherwise resolves against this card
+     and lands inside it. */
   z-index: 3;
+  grid-row: 2;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: var(--page-width, 120rem);
+  margin-inline: auto;
+  margin-block-start: calc(-1 * var(--hero-card-overlap));
+  /* 20px at 375px, 48px at 1440px, matching the live theme gutter. */
+  padding-inline: clamp(2rem, 0.96rem + 2.2vw, 4.8rem);
+  padding-block: clamp(2.4rem, 1.6rem + 3vw, 4.8rem);
+  /* Top corners only. The card's bottom sits flush on the section edge with
+     the next white section directly beneath, so rounding the bottom lets the
+     dark section background show through as two notches instead of reading as
+     one continuous white surface. The frame's card is a single sheet spanning
+     the copy, the benefits and the description; here that surface is made of
+     adjacent sections, so only the top corners are ever against dark. */
+  border-start-start-radius: var(--hero-card-radius);
+  border-start-end-radius: var(--hero-card-radius);
   background: var(--hero-card-background, #fff);
-  color: var(--hero-card-text, #121212);
-  border-start-start-radius: var(--hero-media-radius, 30px);
-  border-start-end-radius: var(--hero-media-radius, 30px);
-  margin-top: calc(-1 * var(--hero-media-radius, 30px));
-  padding-block: clamp(1.5rem, 1rem + 3vw, 2.75rem) clamp(1.25rem, 1rem + 2vw, 2rem);
-  padding-inline: var(--hero-gutter);
+  color: var(--hero-copy-color);
 }
 
 .hero-video__content {
   display: flex;
   flex-direction: column;
-  gap: clamp(0.75rem, 0.5rem + 1.4vw, 1.25rem);
-  max-width: 46rem;
-  margin-inline: auto;
-}
-
-.hero-video--mobile-center .hero-video__content {
   align-items: center;
+  gap: clamp(1.2rem, 0.88rem + 0.85vw, 2rem);
+  /* Wide enough for the longest headline word at the largest size, so the
+     headline wraps between words rather than inside one. */
+  max-width: min(100%, 56rem);
   text-align: center;
+  text-wrap: balance;
 }
 
-.hero-video--mobile-left .hero-video__content {
-  align-items: flex-start;
-  text-align: start;
-}
-
-/* --------------------------------------------------------------------------
-   Badge
-
-   One node. On small screens it is lifted out of the card and floated over the
-   media. On large screens it returns to normal flow above the rating.
-   -------------------------------------------------------------------------- */
-
+/* On mobile the badge floats over the media, clear of the card. It stays in
+   the content stack in the markup so the reading order is badge, rating,
+   heading, and only its painting position changes. */
 .hero-video__badge {
-  position: absolute;
-  inset-block-start: calc(-0.55 * var(--hero-badge-size-mobile, 92px) - var(--hero-media-radius, 30px));
-  inset-inline-end: var(--hero-gutter);
-  z-index: 4;
   display: block;
+  position: absolute;
+  z-index: 4;
+  /* Clears the overlaid header by measuring it rather than guessing a gap.
+     Dawn publishes --header-height before first paint. */
+  inset-block-start: calc(var(--header-height, 6.4rem) + 1.6rem);
+  inset-inline-end: clamp(1.6rem, 0.8rem + 2.5vw, 3rem);
   width: var(--hero-badge-size-mobile, 92px);
-  line-height: 0;
-  transform: rotate(var(--hero-badge-rotation, 15deg));
+  rotate: var(--hero-badge-rotation, 15deg);
 }
 
 .hero-video__badge-image {
+  display: block;
   width: 100%;
   height: auto;
-  display: block;
 }
 
-/* --------------------------------------------------------------------------
-   Rating
-   -------------------------------------------------------------------------- */
+/* Rating
+   ------------------------------------------------------------------ */
 
 .hero-video__rating {
   display: flex;
   align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 0.5em;
   margin: 0;
-  font-size: clamp(0.75rem, 0.68rem + 0.35vw, 0.9375rem);
+  /* 14px at 390px, 19px at 1920px. */
+  font-size: clamp(1.4rem, 1.273rem + 0.3268vw, 1.9rem);
   line-height: 1.3;
-  color: inherit;
 }
 
-.hero-video__rating-text {
+.star-rating {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  line-height: 1;
+}
+
+.star-rating__layer {
+  display: flex;
+  gap: 0.15em;
   white-space: nowrap;
 }
 
-.hero-video__rating-text strong,
-.hero-video__rating-text b {
-  font-weight: 600;
+.star-rating__layer--track {
+  color: currentcolor;
+  opacity: 0.25;
 }
 
-/* --------------------------------------------------------------------------
-   Heading
-   -------------------------------------------------------------------------- */
+/* Clipped to the rating percentage, which is why fractional ratings work
+   without half-star icon variants. */
+.star-rating__layer--fill {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  overflow: hidden;
+  color: #f5b301;
+  opacity: 1;
+}
+
+.star-rating__star {
+  width: 1em;
+  height: 1em;
+  flex: 0 0 auto;
+}
+
+/* Typography
+   ------------------------------------------------------------------ */
 
 .hero-video__heading {
   margin: 0;
-  max-width: var(--hero-heading-measure, 14ch);
-  font-family: var(--hero-heading-font-mobile);
-  font-size: clamp(2rem, 1.1rem + 4.4vw, 2.75rem);
-  font-weight: var(--hero-heading-weight, 700);
-  line-height: 1.04;
-  letter-spacing: -0.02em;
+  /* Dawn colours every h1-h5 with rgb(var(--color-foreground)), which beats
+     inheritance and would leave the headline dark over the video. Opting back
+     into the inherited copy colour is the fix, not a more specific override. */
   color: inherit;
-  text-wrap: balance;
+  /* Figma uses two different faces: Fraunces 50px on the 390px mobile frame,
+     Inter 79px on the 1920px desktop frame. Both are in Shopify's font
+     library, so each is a font_picker rather than an external link. */
+  font-family: var(--hero-heading-font-mobile, inherit);
+  font-variation-settings: 'SOFT' 0, 'WONK' 1;
+  /* 50px at 390px, 79px at 1920px. */
+  font-size: clamp(5rem, 4.26rem + 1.8954vw, 7.9rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.032em;
+  /* Dawn sets word-break: break-word on every heading, which splits a long
+     word mid-glyph rather than moving it to the next line. break-word here
+     only breaks when a word genuinely cannot fit. */
+  word-break: normal;
+  overflow-wrap: break-word;
 }
 
-.hero-video__heading em,
-.hero-video__heading i {
+/* The design italicises the second word of the headline. inline_richtext lets
+   the merchant choose which word from the editor while the heading stays a
+   single semantic element. */
+.hero-video__heading em {
+  font-family: var(--hero-accent-font-family, inherit);
   font-style: italic;
-  font-weight: 400;
+  font-weight: var(--hero-accent-font-weight, 400);
 }
-
-/* --------------------------------------------------------------------------
-   Supporting text
-   -------------------------------------------------------------------------- */
 
 .hero-video__subheading {
   margin: 0;
-  max-width: 34ch;
-  font-size: clamp(0.9375rem, 0.85rem + 0.4vw, 1.125rem);
-  line-height: 1.5;
-  opacity: 0.85;
+  font-size: clamp(1.6rem, 1.42rem + 0.4575vw, 2.3rem);
+  font-weight: 500;
+  line-height: 1.4;
 }
 
-.hero-video__subheading--desktop {
-  display: none;
-}
-
-/* --------------------------------------------------------------------------
-   CTA
-   -------------------------------------------------------------------------- */
+/* Call to action
+   ------------------------------------------------------------------ */
 
 .hero-video__cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  align-self: stretch;
-  /* Tap target never drops below 44px regardless of the size slider. */
-  min-height: max(2.75rem, calc(2.6rem * var(--hero-cta-scale, 1.25)));
-  padding-inline: calc(1.8em * var(--hero-cta-scale, 1.25));
+  /* Scaled by a Theme Editor multiplier. max() keeps the 44px tap target even
+     if the merchant scales the button below 100%. */
+  /* 292x52 at 390px, 382x65.5 at 1920px, from the Figma frames. max() keeps
+     the 44px tap target even if the merchant scales the button down. */
+  min-height: max(4.4rem, calc(var(--hero-cta-scale, 1) * clamp(5.2rem, 4.856rem + 0.8824vw, 6.55rem)));
+  min-width: calc(var(--hero-cta-scale, 1) * clamp(29.2rem, 26.906rem + 5.88vw, 38.2rem));
+  max-width: 100%;
+  margin-block-start: clamp(0.4rem, 0.16rem + 0.6vw, 1.2rem);
+  padding-inline: 2rem;
   border-radius: 999px;
   background: var(--hero-cta-background, #cc253e);
   color: var(--hero-cta-text, #fff);
-  font-size: clamp(0.9375rem, 0.85rem + 0.4vw, 1.0625rem);
-  font-weight: 600;
+  font-size: calc(var(--hero-cta-scale, 1) * clamp(1.6rem, 1.396rem + 0.5229vw, 2.4rem));
+  font-weight: 700;
   line-height: 1;
   text-decoration: none;
-  text-align: center;
-  transition: filter 0.18s ease, transform 0.18s ease;
+  transition: transform 0.15s ease, filter 0.15s ease;
 }
 
 .hero-video__cta:hover {
-  filter: brightness(0.9);
-}
-
-.hero-video__cta:active {
-  transform: translateY(1px);
+  filter: brightness(1.08);
+  transform: translateY(-1px);
 }
 
 .hero-video__cta:focus-visible {
-  outline: 3px solid currentColor;
+  outline: 2px solid currentcolor;
   outline-offset: 3px;
 }
 
-.hero-video__cta-label--desktop {
-  display: none;
+/* Mobile content alignment. Declared before the desktop query so the desktop
+   rules win at wider viewports without any specificity escalation. */
+
+.hero-video--mobile-left .hero-video__content {
+  align-items: flex-start;
+  text-align: left;
 }
 
-/* ==========================================================================
-   Large screens: copy moves into the media cell
-   ========================================================================== */
+.hero-video--mobile-left .hero-video__rating {
+  justify-content: flex-start;
+}
+
+/* Copy scrim
+   ------------------------------------------------------------------
+   The flat overlay dims the whole frame evenly, which is fine over the dark
+   still used in the Figma frame but not over arbitrary video: on a bright
+   frame the rating line drops well under 4.5:1. This gradient darkens only
+   the side the copy sits on, so contrast holds without flattening the footage.
+
+   Desktop only, because on small screens the copy is in a card below the
+   media and has nothing to contrast against. */
+
+@media screen and (min-width: 750px) {
+  .hero-video__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: linear-gradient(
+      to right,
+      rgb(0 0 0 / var(--hero-scrim-opacity, 0.45)) 0%,
+      rgb(0 0 0 / 0) 60%
+    );
+    pointer-events: none;
+  }
+
+  .hero-video--align-center .hero-video__media::after {
+    background: radial-gradient(
+      ellipse at center,
+      rgb(0 0 0 / var(--hero-scrim-opacity, 0.45)) 0%,
+      rgb(0 0 0 / 0) 70%
+    );
+  }
+}
+
+/* Desktop reflow
+   ------------------------------------------------------------------
+   Media and content collapse into the same grid cell, the card styling is
+   dropped, and the copy sits over the video. */
 
 @media screen and (min-width: 750px) {
   .hero-video {
-    grid-template-areas: 'stack';
-    grid-template-rows: minmax(var(--hero-height, 90svh), auto);
-    background: transparent;
-  }
-
-  .hero-video__media,
-  .hero-video__inner {
-    grid-area: stack;
+    min-height: var(--hero-height, 90vh);
+    --hero-copy-color: var(--hero-overlay-text, #fff);
   }
 
   .hero-video__media {
+    grid-area: 1 / 1;
     aspect-ratio: auto;
-    height: 100%;
-    max-height: none;
-    border-radius: var(--hero-media-radius-desktop, 0);
+    border-radius: var(--hero-media-radius-desktop, 2.4rem);
   }
 
   .hero-video__overlay {
     opacity: var(--hero-overlay-opacity, 0.2);
   }
 
-  .hero-video__scrim {
-    opacity: 1;
-    background: linear-gradient(
-      to right,
-      rgb(0 0 0 / var(--hero-scrim-opacity, 0.45)) 0%,
-      rgb(0 0 0 / calc(var(--hero-scrim-opacity, 0.45) * 0.55)) 38%,
-      transparent 68%
-    );
+  .hero-video__heading {
+    font-family: var(--hero-heading-font, inherit);
+    letter-spacing: -0.04em;
   }
 
-  .hero-video--align-center .hero-video__scrim {
-    background: radial-gradient(
-      ellipse at center,
-      rgb(0 0 0 / var(--hero-scrim-opacity, 0.45)) 0%,
-      transparent 72%
-    );
+  /* The mobile frame italicises the second word; the desktop frame sets the
+     whole headline in one upright face. The same <em> in the content serves
+     both, so the merchant writes the heading once. */
+  .hero-video__heading em {
+    font-family: inherit;
+    font-style: normal;
+    font-weight: inherit;
+  }
+
+  .hero-video__cta {
+    font-weight: 600;
   }
 
   .hero-video__inner {
-    display: grid;
-    align-content: center;
-    background: transparent;
-    color: var(--hero-overlay-text, #fff);
-    border-radius: 0;
-    margin-top: 0;
-    padding-block: clamp(3rem, 1rem + 6vw, 7rem);
-    padding-inline: var(--hero-gutter);
-    /* The overlay spans the full hero, so it would swallow clicks on the
-       media. Only the interactive children take pointer events back. */
-    pointer-events: none;
-  }
-
-  .hero-video__inner a,
-  .hero-video__inner button {
-    pointer-events: auto;
-  }
-
-  .hero-video__content {
-    gap: clamp(1rem, 0.6rem + 1.2vw, 1.75rem);
-    max-width: min(90rem, 100%);
-    width: 100%;
-  }
-
-  .hero-video--align-left .hero-video__content {
-    align-items: flex-start;
-    text-align: start;
-  }
-
-  .hero-video--align-center .hero-video__content {
+    grid-area: 1 / 1;
     align-items: center;
-    text-align: center;
-    max-width: 60rem;
+    margin-block-start: 0;
+    padding-block: clamp(4.8rem, 3.2rem + 4vw, 9.6rem);
+    border-radius: 0;
+    background: none;
   }
 
   .hero-video__badge {
     position: static;
-    width: clamp(6rem, 3rem + 7vw, 9.25rem);
-    transform: none;
-    margin-block-end: clamp(0.25rem, 0.6vw, 0.75rem);
+    rotate: none;
+    width: clamp(7.6rem, 6.24rem + 3.6vw, 11.2rem);
+    margin-block-end: clamp(0.4rem, 0.16rem + 0.6vw, 1.2rem);
   }
 
-  .hero-video__rating {
-    font-size: clamp(0.9375rem, 0.6rem + 0.75vw, 1.25rem);
+  .hero-video--align-left .hero-video__inner {
+    justify-content: flex-start;
   }
 
-  .hero-video__heading {
-    font-family: var(--hero-heading-font);
-    font-size: clamp(2.75rem, 0.4rem + 5.4vw, 5.5rem);
-    line-height: 0.98;
-  }
-
-  /* The desktop headline is a single typeface. Neutralise the accent so one
-     editor value renders correctly in both layouts. */
-  .hero-video__heading em,
-  .hero-video__heading i {
-    font-style: inherit;
-    font-weight: inherit;
-  }
-
-  .hero-video__subheading {
-    font-size: clamp(1rem, 0.7rem + 0.7vw, 1.5rem);
-    opacity: 0.92;
-  }
-
-  .hero-video__subheading--desktop {
-    display: block;
-  }
-
-  .hero-video__cta {
-    align-self: auto;
-    min-height: max(2.75rem, calc(3.7rem * var(--hero-cta-scale, 1.25)));
-    padding-inline: calc(2.2em * var(--hero-cta-scale, 1.25));
-    font-size: clamp(1rem, 0.6rem + 0.85vw, 1.625rem);
-    font-weight: 500;
-  }
-
-  .hero-video__cta-label--desktop {
-    display: inline;
-  }
-
-  .hero-video__cta-label--mobile {
-    display: none;
+  .hero-video--align-left .hero-video__content {
+    align-items: flex-start;
+    text-align: left;
   }
 }
 
-@media screen and (min-width: 1600px) {
-  .hero-video__content {
-    max-width: 90rem;
-    margin-inline: auto;
-  }
-}
-
-/* ==========================================================================
-   Motion and forced colours
-   ========================================================================== */
+/* Motion
+   ------------------------------------------------------------------ */
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-video__player {
-    display: none;
-  }
-
-  .hero-video__cta,
   .hero-video__media-video {
-    transition: none;
-  }
-}
-
-@media (forced-colors: active) {
-  .hero-video__overlay,
-  .hero-video__scrim {
     display: none;
   }
 
   .hero-video__cta {
-    border: 2px solid currentColor;
+    transition: none;
   }
+
+  .hero-video__cta:hover {
+    transform: none;
+  }
+}
+
+/* Media swap wrappers
+   ------------------------------------------------------------------
+   <picture> and <responsive-video> are inline by default and would otherwise
+   not fill the media box. */
+
+.hero-video__picture,
+.hero-video__player {
+  display: block;
+  position: absolute;
+  inset: 0;
+}
+
+.hero-video__picture {
+  z-index: 0;
+}
+
+.hero-video__player {
+  z-index: 1;
 }

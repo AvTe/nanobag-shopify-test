@@ -1,148 +1,122 @@
 {{ 'section-hero-video.css' | asset_url | stylesheet_tag }}
 
-{%- liquid
-  assign s = section.settings
-
-  assign heading_tag = s.heading_tag | default: 'h1'
-  assign cta_url = s.cta_link | default: routes.all_products_collection_url
-
-  # ---------------------------------------------------------------------------
-  # Media resolution
-  #
-  # Every media field is optional, so each one resolves independently and then
-  # falls back to the other side. Resolving desktop first and letting mobile
-  # inherit from it would blank the poster whenever only mobile assets exist.
-  # ---------------------------------------------------------------------------
-  assign poster_d = s.poster_image | default: s.video_desktop.preview_image
-  assign poster_m = s.poster_image_mobile | default: s.video_mobile.preview_image
-
-  assign poster_d = poster_d | default: poster_m
-  assign poster_m = poster_m | default: poster_d
-
-  # Art-direct only when the merchant actually supplied a distinct mobile
-  # asset. Comparing the settings is explicit; comparing the resolved drops
-  # relies on object identity, which Liquid does not guarantee.
-  assign split_poster = false
-  if s.poster_image_mobile != blank or s.video_mobile != blank
-    if poster_m != blank and poster_d != blank
-      assign split_poster = true
-    endif
-  endif
-
-  assign badge_d = s.badge_image | default: s.badge_image_mobile
-  assign badge_m = s.badge_image_mobile | default: s.badge_image
-  assign split_badge = false
-  if s.badge_image_mobile != blank and s.badge_image != blank
-    assign split_badge = true
-  endif
-
-  assign has_video = false
-  if s.video_desktop != blank or s.video_mobile != blank
-    assign has_video = true
-  endif
-
-  # Italic is a separate face. Without loading it the browser fakes the slant,
-  # which is visibly wrong on a serif with true italic letterforms.
-  assign heading_font_m_italic = s.heading_font_mobile | font_modify: 'style', 'italic'
-  assign heading_font_d_italic = s.heading_font | font_modify: 'style', 'italic'
--%}
-
 {%- comment -%}
-  font_face emits a bare @font-face rule rather than a tag, so it has to live in
-  a style block. Fonts come from Shopify's font CDN, so there is no external
-  request. Dawn does the same in theme.liquid.
+  The headline face is a font_picker rather than a Google Fonts link, so it is
+  served from Shopify's own font CDN with no external request.
+
+  font_face emits a bare @font-face rule, not a tag, so it has to sit inside a
+  style block. This is the one place a style block is warranted: an @font-face
+  cannot be expressed as a custom property in a static stylesheet. Dawn does
+  the same thing in theme.liquid.
 {%- endcomment -%}
 {%- style -%}
-  {{ s.heading_font | font_face: font_display: 'swap' }}
-  {{ s.heading_font_mobile | font_face: font_display: 'swap' }}
-  {{ heading_font_d_italic | font_face: font_display: 'swap' }}
-  {{ heading_font_m_italic | font_face: font_display: 'swap' }}
+  {{ section.settings.heading_font | font_face: font_display: 'swap' }}
+  {{ section.settings.heading_font_mobile | font_face: font_display: 'swap' }}
 {%- endstyle -%}
 
+{%- liquid
+  assign overlay_alpha = section.settings.overlay_opacity | divided_by: 100.0
+  assign heading_tag = section.settings.heading_tag | default: 'h1'
+  assign cta_url = section.settings.cta_link | default: routes.all_products_collection_url
+
+  # Shopify generates a preview image for every uploaded video, so a poster is
+  # never mandatory. An explicit poster still wins where the merchant wants a
+  # different frame or a different crop.
+  assign desktop_poster = section.settings.poster_image | default: section.settings.video_desktop.preview_image
+  assign mobile_poster = section.settings.poster_image_mobile | default: section.settings.video_mobile.preview_image
+  assign mobile_poster = mobile_poster | default: desktop_poster
+
+  assign badge_desktop = section.settings.badge_image
+  assign badge_mobile = section.settings.badge_image_mobile | default: badge_desktop
+
+  assign has_video = false
+  if section.settings.video_desktop != blank or section.settings.video_mobile != blank
+    assign has_video = true
+  endif
+-%}
+
 {%- if has_video -%}
-  {{ 'hero-video.js' | asset_url | script_tag }}
+  <script src="{{ 'hero-video.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 
+{%- comment -%}
+  The overlay opacity, colour and section height are the only values that cannot
+  be known at build time, so they are piped in as custom properties. Everything
+  else lives in section-hero-video.css.
+{%- endcomment -%}
 <div
-  class="hero-video hero-video--align-{{ s.content_alignment }} hero-video--mobile-{{ s.mobile_alignment }}"
+  class="hero-video hero-video--align-{{ section.settings.content_alignment }} hero-video--mobile-{{ section.settings.mobile_alignment }}"
   style="
-    --hero-overlay-color: {{ s.overlay_color }};
-    --hero-overlay-opacity: {{ s.overlay_opacity | divided_by: 100.0 }};
-    --hero-overlay-opacity-mobile: {{ s.overlay_opacity_mobile | divided_by: 100.0 }};
-    --hero-scrim-opacity: {{ s.copy_scrim_opacity | divided_by: 100.0 }};
-    --hero-height: {{ s.section_height }}svh;
-    --hero-mobile-ratio: {{ s.mobile_media_ratio }};
-    --hero-media-radius: {{ s.mobile_media_radius }}px;
-    --hero-media-radius-desktop: {{ s.media_radius_desktop }}px;
-    --hero-section-background: {{ s.section_background }};
-    --hero-card-background: {{ s.card_background }};
-    --hero-card-text: {{ s.card_text_color }};
-    --hero-overlay-text: {{ s.overlay_text_color }};
-    --hero-cta-background: {{ s.cta_background }};
-    --hero-cta-text: {{ s.cta_text_color }};
-    --hero-cta-scale: {{ s.cta_size | divided_by: 100.0 }};
-    --hero-star-color: {{ s.star_color }};
-    --hero-badge-size-mobile: {{ s.badge_size_mobile }}px;
-    --hero-badge-rotation: {{ s.badge_rotation }}deg;
-    --hero-heading-measure: {{ s.heading_measure }}ch;
-    --hero-heading-weight: {{ s.heading_font.weight }};
-    --hero-heading-font: {{ s.heading_font.family }}, {{ s.heading_font.fallback_families }};
-    --hero-heading-font-mobile: {{ s.heading_font_mobile.family }}, {{ s.heading_font_mobile.fallback_families }};
+    --hero-overlay-opacity: {{ overlay_alpha }};
+    --hero-overlay-color: {{ section.settings.overlay_color }};
+    --hero-height: {{ section.settings.section_height }}vh;
+    --hero-cta-background: {{ section.settings.cta_background }};
+    --hero-cta-text: {{ section.settings.cta_text_color }};
+    --hero-mobile-ratio: {{ section.settings.mobile_media_ratio }};
+    --hero-card-background: {{ section.settings.card_background }};
+    --hero-card-text: {{ section.settings.card_text_color }};
+    --hero-overlay-text: {{ section.settings.overlay_text_color }};
+    --hero-cta-scale: {{ section.settings.cta_size | divided_by: 100.0 }};
+    --hero-heading-font: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+    --hero-heading-font-mobile: {{ section.settings.heading_font_mobile.family }}, {{ section.settings.heading_font_mobile.fallback_families }};
+    --hero-overlay-opacity-mobile: {{ section.settings.overlay_opacity_mobile | divided_by: 100.0 }};
+    --hero-badge-rotation: {{ section.settings.badge_rotation }}deg;
+    --hero-media-radius-desktop: {{ section.settings.media_radius_desktop }}px;
+    --hero-heading-weight: {{ section.settings.heading_font.weight }};
+    --hero-badge-size-mobile: {{ section.settings.badge_size_mobile }}px;
+    --hero-media-radius: {{ section.settings.mobile_media_radius }}px;
+    --hero-section-background: {{ section.settings.section_background }};
+    --hero-scrim-opacity: {{ section.settings.copy_scrim_opacity | divided_by: 100.0 }};
   "
 >
   <div class="hero-video__media">
     {%- comment -%}
       The poster is the LCP element: eager, high priority, responsive. A
-      <picture> swaps the crop at the breakpoint natively, so exactly one file
-      downloads and no script is involved. Decorative, so alt is empty by
-      design: the heading carries the meaning.
+      <picture> swaps the crop at the breakpoint natively, which keeps this to
+      one element and no JavaScript. It is decorative, so alt is intentionally
+      empty: the heading carries the meaning.
     {%- endcomment -%}
-    {%- if poster_d != blank -%}
+    {%- if desktop_poster != blank -%}
       <picture class="hero-video__picture">
-        {%- if split_poster -%}
+        {%- if mobile_poster != desktop_poster -%}
           <source
             media="(max-width: 749px)"
             srcset="
-              {{ poster_m | image_url: width: 600 }} 600w,
-              {{ poster_m | image_url: width: 900 }} 900w,
-              {{ poster_m | image_url: width: 1200 }} 1200w,
-              {{ poster_m | image_url: width: 1500 }} 1500w
+              {{ mobile_poster | image_url: width: 600 }} 600w,
+              {{ mobile_poster | image_url: width: 900 }} 900w,
+              {{ mobile_poster | image_url: width: 1200 }} 1200w
             "
             sizes="100vw"
-            width="{{ poster_m.width }}"
-            height="{{ poster_m.height }}"
           >
         {%- endif -%}
         {{
-          poster_d
+          desktop_poster
           | image_url: width: 1920
           | image_tag:
             class: 'hero-video__poster',
             loading: 'eager',
             fetchpriority: 'high',
-            decoding: 'sync',
             sizes: '100vw',
-            widths: '640, 960, 1280, 1600, 1920, 2400',
+            widths: '640, 960, 1280, 1600, 1920',
             alt: ''
         }}
       </picture>
     {%- endif -%}
 
     {%- comment -%}
-      Each video sits in an inert <template>. Content inside a template is not
-      fetched until it is cloned, so only the viewport's own video is ever
-      downloaded, and nothing at all downloads under reduced motion.
+      Each video sits in an inert <template>, so only the one matching the
+      viewport is ever fetched. See assets/hero-video.js.
 
-      image_size is deliberately omitted so Shopify emits no poster attribute.
-      The <video> then stays transparent until its first frame, letting the
-      poster image show through underneath.
+      image_size is deliberately omitted so Shopify emits no poster attribute on
+      the video. The video then paints transparent until its first frame, which
+      lets the poster image show through underneath, with no cross-fade script.
     {%- endcomment -%}
     {%- if has_video -%}
       <responsive-video class="hero-video__player" data-breakpoint="750">
-        {%- if s.video_mobile != blank -%}
+        {%- if section.settings.video_mobile != blank -%}
           <template data-viewport="mobile">
             {{
-              s.video_mobile
+              section.settings.video_mobile
               | video_tag:
                 class: 'hero-video__media-video',
                 autoplay: true,
@@ -154,10 +128,10 @@
             }}
           </template>
         {%- endif -%}
-        {%- if s.video_desktop != blank -%}
+        {%- if section.settings.video_desktop != blank -%}
           <template data-viewport="desktop">
             {{
-              s.video_desktop
+              section.settings.video_desktop
               | video_tag:
                 class: 'hero-video__media-video',
                 autoplay: true,
@@ -173,72 +147,57 @@
     {%- endif -%}
 
     <div class="hero-video__overlay" aria-hidden="true"></div>
-    <div class="hero-video__scrim" aria-hidden="true"></div>
   </div>
 
   <div class="hero-video__inner">
     <div class="hero-video__content">
-      {%- if badge_d != blank -%}
+      {%- comment -%}
+        A <picture> swaps the badge lockup at the breakpoint natively. One
+        element, one alt, no duplicated node and no script.
+      {%- endcomment -%}
+      {%- if badge_desktop != blank -%}
         <picture class="hero-video__badge">
-          {%- if split_badge -%}
+          {%- if badge_mobile != badge_desktop -%}
             <source
               media="(max-width: 749px)"
               srcset="
-                {{ badge_m | image_url: width: 160 }} 160w,
-                {{ badge_m | image_url: width: 240 }} 240w,
-                {{ badge_m | image_url: width: 320 }} 320w
+                {{ badge_mobile | image_url: width: 160 }} 160w,
+                {{ badge_mobile | image_url: width: 240 }} 240w,
+                {{ badge_mobile | image_url: width: 320 }} 320w
               "
-              sizes="{{ s.badge_size_mobile }}px"
-              width="{{ badge_m.width }}"
-              height="{{ badge_m.height }}"
+              sizes="{{ section.settings.badge_size_mobile }}px"
             >
           {%- endif -%}
           {{
-            badge_d
+            badge_desktop
             | image_url: width: 320
             | image_tag:
               class: 'hero-video__badge-image',
               loading: 'eager',
-              decoding: 'async',
               widths: '160, 240, 320',
-              sizes: '(min-width: 750px) 148px, 92px',
-              alt: s.badge_alt
+              sizes: '(min-width: 750px) 110px, 88px',
+              alt: section.settings.badge_alt
           }}
         </picture>
       {%- endif -%}
 
-      {%- if s.rating_text != blank or s.show_stars -%}
+      {%- if section.settings.rating_text != blank -%}
         <p class="hero-video__rating">
-          {%- if s.show_stars -%}
-            {%- render 'star-rating', rating: s.rating_value, class: 'hero-video__stars' -%}
-          {%- endif -%}
-          {%- if s.rating_text != blank -%}
-            <span class="hero-video__rating-text">{{ s.rating_text }}</span>
-          {%- endif -%}
+          {%- render 'star-rating', rating: section.settings.rating_value, class: 'hero-video__stars' -%}
+          <span class="hero-video__rating-text">{{ section.settings.rating_text }}</span>
         </p>
       {%- endif -%}
 
-      {%- if s.heading != blank -%}
-        <{{ heading_tag }} class="hero-video__heading">{{ s.heading }}</{{ heading_tag }}>
+      {%- if section.settings.heading != blank -%}
+        <{{ heading_tag }} class="hero-video__heading">{{ section.settings.heading }}</{{ heading_tag }}>
       {%- endif -%}
 
-      {%- if s.subheading != blank -%}
-        <p class="hero-video__subheading{% unless s.show_subheading_mobile %} hero-video__subheading--desktop{% endunless %}">
-          {{ s.subheading }}
-        </p>
+      {%- if section.settings.subheading != blank -%}
+        <p class="hero-video__subheading">{{ section.settings.subheading }}</p>
       {%- endif -%}
 
-      {%- if s.cta_text != blank -%}
-        <a class="hero-video__cta" href="{{ cta_url }}">
-          <span class="hero-video__cta-label{% if s.cta_text_mobile != blank %} hero-video__cta-label--desktop{% endif %}">
-            {{- s.cta_text | escape -}}
-          </span>
-          {%- if s.cta_text_mobile != blank -%}
-            <span class="hero-video__cta-label hero-video__cta-label--mobile">
-              {{- s.cta_text_mobile | escape -}}
-            </span>
-          {%- endif -%}
-        </a>
+      {%- if section.settings.cta_text != blank -%}
+        <a class="hero-video__cta" href="{{ cta_url }}">{{ section.settings.cta_text | escape }}</a>
       {%- endif -%}
     </div>
   </div>
@@ -250,10 +209,16 @@
   "tag": "section",
   "class": "section-hero-video",
   "disabled_on": {
-    "groups": ["header", "footer"]
+    "groups": [
+      "header",
+      "footer"
+    ]
   },
   "settings": [
-    { "type": "header", "content": "Media" },
+    {
+      "type": "header",
+      "content": "Media"
+    },
     {
       "type": "video",
       "id": "video_desktop",
@@ -276,7 +241,7 @@
       "type": "image_picker",
       "id": "poster_image_mobile",
       "label": "Mobile poster image",
-      "info": "Optional. Use a portrait crop. Falls back to the mobile video's preview image."
+      "info": "Optional. Use a portrait crop. Falls back to the mobile video's preview image, then the desktop poster."
     },
     {
       "type": "range",
@@ -287,7 +252,7 @@
       "step": 5,
       "unit": "%",
       "default": 20,
-      "info": "Applies across the whole media. Keep body text at 4.5:1 over the poster."
+      "info": "Figma uses 20% on the desktop frame. Keep body text at 4.5:1 over the poster."
     },
     {
       "type": "range",
@@ -332,10 +297,22 @@
       "id": "mobile_media_ratio",
       "label": "Mobile media shape",
       "options": [
-        { "value": "3 / 4", "label": "Portrait (3:4)" },
-        { "value": "4 / 5", "label": "Tall portrait (4:5)" },
-        { "value": "1 / 1", "label": "Square" },
-        { "value": "16 / 9", "label": "Landscape (16:9)" }
+        {
+          "value": "3 / 4",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "4 / 5",
+          "label": "Tall portrait (4:5)"
+        },
+        {
+          "value": "1 / 1",
+          "label": "Square"
+        },
+        {
+          "value": "16 / 9",
+          "label": "Landscape (16:9)"
+        }
       ],
       "default": "3 / 4",
       "info": "Height of the media on small screens, where the copy sits in a card below it."
@@ -348,7 +325,8 @@
       "max": 48,
       "step": 2,
       "unit": "px",
-      "default": 30
+      "default": 30,
+      "info": "Rounds the top corners of the video on small screens."
     },
     {
       "type": "range",
@@ -359,16 +337,22 @@
       "step": 2,
       "unit": "px",
       "default": 0,
-      "info": "The desktop frame is full bleed, so leave at 0 unless you want a visible corner."
+      "info": "The desktop frame's rounded container extends above the viewport, so no corner is visible. Leave at 0 unless you want one."
     },
-
-    { "type": "header", "content": "Badge and rating" },
-    { "type": "image_picker", "id": "badge_image", "label": "Award badge" },
+    {
+      "type": "header",
+      "content": "Badge and rating"
+    },
+    {
+      "type": "image_picker",
+      "id": "badge_image",
+      "label": "Award badge"
+    },
     {
       "type": "image_picker",
       "id": "badge_image_mobile",
       "label": "Award badge (small screens)",
-      "info": "Optional. The mobile frame uses a circular lockup. Falls back to the badge above."
+      "info": "Optional. The mobile frame uses a different lockup. Falls back to the badge above."
     },
     {
       "type": "text",
@@ -397,12 +381,6 @@
       "default": 15
     },
     {
-      "type": "checkbox",
-      "id": "show_stars",
-      "label": "Show star icons",
-      "default": true
-    },
-    {
       "type": "range",
       "id": "rating_value",
       "label": "Star rating",
@@ -410,7 +388,7 @@
       "max": 5,
       "step": 0.1,
       "default": 4.8,
-      "info": "Fills the stars. The caption below carries the exact figure."
+      "info": "Fills the stars. Shopify caps range defaults at one decimal, so the caption below carries the exact figure."
     },
     {
       "type": "inline_richtext",
@@ -420,55 +398,46 @@
       "info": "Bold the numbers to match the design."
     },
     {
-      "type": "color",
-      "id": "star_color",
-      "label": "Star colour",
-      "default": "#F5A623"
+      "type": "header",
+      "content": "Content"
     },
-
-    { "type": "header", "content": "Content" },
     {
       "type": "font_picker",
       "id": "heading_font",
       "label": "Headline font (large screens)",
-      "default": "assistant_n7",
-      "info": "Confirm the family exists in Shopify's library. An invalid value here stops the section loading."
+      "default": "inter_n7",
+      "info": "Figma uses Inter SemiBold on the desktop frame."
     },
     {
       "type": "font_picker",
       "id": "heading_font_mobile",
       "label": "Headline font (small screens)",
-      "default": "assistant_n7",
-      "info": "The mobile frame uses a serif. Pick it here once you have confirmed availability."
+      "default": "fraunces_n7",
+      "info": "Figma uses Fraunces on the mobile frame, with the second word italicised."
     },
     {
       "type": "inline_richtext",
       "id": "heading",
       "label": "Heading",
-      "default": "Extreme <em>practicality</em>",
-      "info": "Italicise a word for the serif accent on small screens. Large screens render the whole heading in one face."
+      "default": "Extreme practicality",
+      "info": "Wrap a word in italics if you want the accent treatment."
     },
     {
       "type": "select",
       "id": "heading_tag",
       "label": "Heading level",
       "options": [
-        { "value": "h1", "label": "H1" },
-        { "value": "h2", "label": "H2" }
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        }
       ],
       "default": "h1",
       "info": "Use H1 only when this section is the top of the page. One H1 per page."
-    },
-    {
-      "type": "range",
-      "id": "heading_measure",
-      "label": "Heading line length",
-      "min": 8,
-      "max": 30,
-      "step": 1,
-      "unit": "ch",
-      "default": 14,
-      "info": "Controls where the heading wraps. Lower values force an earlier break."
     },
     {
       "type": "inline_richtext",
@@ -477,23 +446,10 @@
       "default": "Zero bulk, Maximum Carry."
     },
     {
-      "type": "checkbox",
-      "id": "show_subheading_mobile",
-      "label": "Show supporting text on small screens",
-      "default": false
-    },
-    {
       "type": "text",
       "id": "cta_text",
       "label": "Button label",
       "default": "Get Nanobag"
-    },
-    {
-      "type": "text",
-      "id": "cta_text_mobile",
-      "label": "Button label (small screens)",
-      "info": "Optional. Leave empty to reuse the label above.",
-      "default": "Shop Nanobag"
     },
     {
       "type": "url",
@@ -524,8 +480,10 @@
       "default": 125,
       "info": "Scales padding and label together. The 44px minimum tap target is kept at any value."
     },
-
-    { "type": "header", "content": "Layout" },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
     {
       "type": "color",
       "id": "overlay_text_color",
@@ -557,8 +515,14 @@
       "id": "content_alignment",
       "label": "Desktop content position",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Centre" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Centre"
+        }
       ],
       "default": "left"
     },
@@ -567,12 +531,22 @@
       "id": "mobile_alignment",
       "label": "Mobile content position",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Centre" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Centre"
+        }
       ],
       "default": "center"
     }
   ],
-  "presets": [{ "name": "Hero video" }]
+  "presets": [
+    {
+      "name": "Hero video"
+    }
+  ]
 }
 {% endschema %}
