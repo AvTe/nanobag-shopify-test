@@ -168,6 +168,8 @@
   style="
     --header-icon-size: {{ section.settings.icon_size }}px;
     --header-nav-size: {{ section.settings.nav_font_size }}px;
+    --header-gutter: {{ section.settings.header_gutter }}px;
+    --header-content-max: {{ section.settings.header_content_max }}px;
     --header-logo-width-mobile: {{ section.settings.logo_width_mobile }}px;
     {%- if transparent_header %}
       --header-transparent-text: {{ section.settings.transparent_text_color }};
@@ -191,7 +193,7 @@
       assign language_selector = true
     endif
   -%}
-  <header class="header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }}{% if section.settings.menu_alignment == 'center' %} header--menu-center{% endif %}{% unless section.settings.show_account_mobile %} header--hide-account-mobile{% endunless %} page-width{% if section.settings.menu_type_desktop == 'drawer' %} drawer-menu{% endif %}{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if social_links %} header--has-social{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}{% if country_selector or language_selector %} header--has-localizations{% endif %}">
+  <header class="header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }}{% if section.settings.menu_alignment == 'center' %} header--menu-center{% endif %}{% if section.settings.header_full_width %} header--full-width{% endif %}{% unless section.settings.show_account_mobile %} header--hide-account-mobile{% endunless %} page-width{% if section.settings.menu_type_desktop == 'drawer' %} drawer-menu{% endif %}{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if social_links %} header--has-social{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}{% if country_selector or language_selector %} header--has-localizations{% endif %}">
     {%- liquid
       assign render_search_left = false
       if section.settings.logo_position == 'top-center' or section.settings.menu == blank or shop.customer_accounts_enabled
@@ -608,6 +610,34 @@
       "id": "show_search",
       "label": "Show search icon",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "header_full_width",
+      "label": "Full width header",
+      "default": true,
+      "info": "Spans the viewport with fixed gutters instead of using the theme's page width."
+    },
+    {
+      "type": "range",
+      "id": "header_gutter",
+      "label": "Header side gutters",
+      "min": 16,
+      "max": 96,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "header_content_max",
+      "label": "Header maximum width",
+      "min": 1200,
+      "max": 2400,
+      "step": 50,
+      "unit": "px",
+      "default": 1900,
+      "info": "The header row stops growing past this. Gutters widen beyond it."
     },
     {
       "type": "select",

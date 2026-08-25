@@ -94,7 +94,10 @@
         "icon_size": 28,
         "logo_width_mobile": 138,
         "show_account_mobile": false,
-        "nav_font_size": 18
+        "nav_font_size": 18,
+        "header_full_width": true,
+        "header_gutter": 48,
+        "header_content_max": 1900
       }
     }
   },

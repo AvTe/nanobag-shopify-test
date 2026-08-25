@@ -137,3 +137,28 @@
   font-size: var(--announcement-font-size, 1.6rem);
   letter-spacing: 0;
 }
+
+/* Header width
+   ------------------------------------------------------------------
+   Matches nanobag.com, whose header is page-width--full: max-width none with
+   48px gutters, and --page-padding of max(3rem, 50vw - 1900px/2). Below a
+   1900px viewport that resolves to a flat 48px, and above it the gutters grow
+   so the row itself never exceeds 1900px.
+
+   Reproduced here rather than approximated, so the header stays full-bleed
+   while the sections below keep their own narrower container.
+
+   Dawn's root is 10px, so 4.8rem is the 48px gutter and 95rem is half of the
+   1900px cap. */
+
+/* Selector matches Dawn's own .header:not(.drawer-menu).page-width, which is
+   three classes deep because :not() counts, and adds one more. Written to beat
+   it on specificity rather than on source order, since a two-class selector
+   silently lost to it and the gutters stayed at Dawn's 5rem. */
+.header.header--full-width:not(.drawer-menu).page-width {
+  max-width: none;
+  padding-inline: max(
+    var(--header-gutter, 4.8rem),
+    calc(50vw - var(--header-content-max, 190rem) / 2)
+  );
+}
