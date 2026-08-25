@@ -9,11 +9,14 @@
   It is still a single markup tree. The reflow is done by moving the media and
   the content into the same grid cell at the desktop breakpoint rather than by
   rendering the block twice. Everything else scales with clamp().
+
+  Note: Dawn sets html { font-size: 10px }, so 1rem is 10px here, not 16px.
+  Every rem below is written against that root.
 */
 
 .hero-video {
-  --hero-card-radius: clamp(1.25rem, 0.9rem + 1.5vw, 2rem);
-  --hero-card-overlap: clamp(1.5rem, 1rem + 2.2vw, 2.75rem);
+  --hero-card-radius: 2.8rem;
+  --hero-card-overlap: clamp(2.4rem, 1.6rem + 2.2vw, 4.4rem);
 
   /* One inherited property carries the copy colour to every descendant, so
      the mobile card and the desktop overlay cannot disagree. */
@@ -59,7 +62,7 @@
   inset: 0;
   z-index: 2;
   background: var(--hero-overlay-color, #000);
-  opacity: var(--hero-overlay-opacity, 0.4);
+  opacity: var(--hero-overlay-opacity-mobile, 0);
   pointer-events: none;
 }
 
@@ -67,7 +70,10 @@
    ------------------------------------------------------------------ */
 
 .hero-video__inner {
-  position: relative;
+  /* Deliberately not positioned. A grid item takes z-index without position,
+     and leaving this static keeps .hero-video as the containing block for the
+     absolutely positioned badge, which otherwise resolves against this card
+     and lands inside it. */
   z-index: 3;
   grid-row: 2;
   display: flex;
@@ -76,10 +82,10 @@
   max-width: var(--page-width, 1400px);
   margin-inline: auto;
   margin-block-start: calc(-1 * var(--hero-card-overlap));
-  padding-inline: clamp(1.25rem, 0.5rem + 4vw, 5rem);
-  padding-block: clamp(1.5rem, 1rem + 3vw, 3rem);
-  border-start-start-radius: var(--hero-card-radius);
-  border-start-end-radius: var(--hero-card-radius);
+  /* 20px at 375px, 48px at 1440px, matching the live theme gutter. */
+  padding-inline: clamp(2rem, 0.96rem + 2.2vw, 4.8rem);
+  padding-block: clamp(2.4rem, 1.6rem + 3vw, 4.8rem);
+  border-radius: var(--hero-card-radius);
   background: var(--hero-card-background, #fff);
   color: var(--hero-copy-color);
 }
@@ -88,8 +94,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(0.75rem, 0.55rem + 0.85vw, 1.25rem);
-  max-width: 36ch;
+  gap: clamp(1.2rem, 0.88rem + 0.85vw, 2rem);
+  /* Wide enough for the longest headline word at the largest size, so the
+     headline wraps between words rather than inside one. */
+  max-width: min(100%, 56rem);
   text-align: center;
   text-wrap: balance;
 }
@@ -101,9 +109,12 @@
   display: block;
   position: absolute;
   z-index: 4;
-  inset-block-start: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
-  inset-inline-end: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
-  width: var(--hero-badge-size-mobile, 88px);
+  /* Clears the overlaid header by measuring it rather than guessing a gap.
+     Dawn publishes --header-height before first paint. */
+  inset-block-start: calc(var(--header-height, 6.4rem) + 1.6rem);
+  inset-inline-end: clamp(1.6rem, 0.8rem + 2.5vw, 3rem);
+  width: var(--hero-badge-size-mobile, 92px);
+  rotate: var(--hero-badge-rotation, 15deg);
 }
 
 .hero-video__badge-image {
@@ -122,7 +133,8 @@
   flex-wrap: wrap;
   gap: 0.5em;
   margin: 0;
-  font-size: clamp(0.8125rem, 0.74rem + 0.31vw, 1rem);
+  /* 14px at 390px, 19px at 1920px. */
+  font-size: clamp(1.4rem, 1.273rem + 0.3268vw, 1.9rem);
   line-height: 1.3;
 }
 
@@ -170,12 +182,21 @@
      inheritance and would leave the headline dark over the video. Opting back
      into the inherited copy colour is the fix, not a more specific override. */
   color: inherit;
-  font-family: var(--hero-heading-font, inherit);
-  /* 40px at 375px, matching the reference, rising to 80px at 1440px. */
-  font-size: clamp(2.5rem, 1.6rem + 3.85vw, 5rem);
-  font-weight: 700;
+  /* Figma uses two different faces: Fraunces 50px on the 390px mobile frame,
+     Inter 79px on the 1920px desktop frame. Both are in Shopify's font
+     library, so each is a font_picker rather than an external link. */
+  font-family: var(--hero-heading-font-mobile, inherit);
+  font-variation-settings: 'SOFT' 0, 'WONK' 1;
+  /* 50px at 390px, 79px at 1920px. */
+  font-size: clamp(5rem, 4.26rem + 1.8954vw, 7.9rem);
+  font-weight: 600;
   line-height: 1;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.032em;
+  /* Dawn sets word-break: break-word on every heading, which splits a long
+     word mid-glyph rather than moving it to the next line. break-word here
+     only breaks when a word genuinely cannot fit. */
+  word-break: normal;
+  overflow-wrap: break-word;
 }
 
 /* The design italicises the second word of the headline. inline_richtext lets
@@ -189,9 +210,9 @@
 
 .hero-video__subheading {
   margin: 0;
-  font-size: clamp(0.9375rem, 0.86rem + 0.31vw, 1.125rem);
-  line-height: 1.45;
-  opacity: 0.85;
+  font-size: clamp(1.6rem, 1.42rem + 0.4575vw, 2.3rem);
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 /* Call to action
@@ -203,16 +224,18 @@
   justify-content: center;
   /* Scaled by a Theme Editor multiplier. max() keeps the 44px tap target even
      if the merchant scales the button below 100%. */
-  min-height: max(2.75rem, calc(var(--hero-cta-scale, 1) * 2.75rem));
-  margin-block-start: clamp(0.25rem, 0.1rem + 0.6vw, 0.75rem);
-  padding:
-    calc(var(--hero-cta-scale, 1) * clamp(0.75rem, 0.62rem + 0.53vw, 1rem))
-    calc(var(--hero-cta-scale, 1) * clamp(2rem, 1.4rem + 2.55vw, 3.25rem));
+  /* 292x52 at 390px, 382x65.5 at 1920px, from the Figma frames. max() keeps
+     the 44px tap target even if the merchant scales the button down. */
+  min-height: max(4.4rem, calc(var(--hero-cta-scale, 1) * clamp(5.2rem, 4.856rem + 0.8824vw, 6.55rem)));
+  min-width: calc(var(--hero-cta-scale, 1) * clamp(29.2rem, 26.906rem + 5.88vw, 38.2rem));
+  max-width: 100%;
+  margin-block-start: clamp(0.4rem, 0.16rem + 0.6vw, 1.2rem);
+  padding-inline: 2rem;
   border-radius: 999px;
   background: var(--hero-cta-background, #cc253e);
   color: var(--hero-cta-text, #fff);
-  font-size: calc(var(--hero-cta-scale, 1) * clamp(0.9375rem, 0.88rem + 0.23vw, 1.0625rem));
-  font-weight: 600;
+  font-size: calc(var(--hero-cta-scale, 1) * clamp(1.6rem, 1.396rem + 0.5229vw, 2.4rem));
+  font-weight: 700;
   line-height: 1;
   text-decoration: none;
   transition: transform 0.15s ease, filter 0.15s ease;
@@ -254,22 +277,36 @@
   .hero-video__media {
     grid-area: 1 / 1;
     aspect-ratio: auto;
-    border-radius: 0;
+    border-radius: var(--hero-media-radius-desktop, 2.4rem);
+  }
+
+  .hero-video__overlay {
+    opacity: var(--hero-overlay-opacity, 0.2);
+  }
+
+  .hero-video__heading {
+    font-family: var(--hero-heading-font, inherit);
+    letter-spacing: -0.04em;
+  }
+
+  .hero-video__cta {
+    font-weight: 600;
   }
 
   .hero-video__inner {
     grid-area: 1 / 1;
     align-items: center;
     margin-block-start: 0;
-    padding-block: clamp(3rem, 2rem + 4vw, 6rem);
+    padding-block: clamp(4.8rem, 3.2rem + 4vw, 9.6rem);
     border-radius: 0;
     background: none;
   }
 
   .hero-video__badge {
     position: static;
-    width: clamp(4.75rem, 3.9rem + 3.6vw, 7rem);
-    margin-block-end: clamp(0.25rem, 0.1rem + 0.6vw, 0.75rem);
+    rotate: none;
+    width: clamp(7.6rem, 6.24rem + 3.6vw, 11.2rem);
+    margin-block-end: clamp(0.4rem, 0.16rem + 0.6vw, 1.2rem);
   }
 
   .hero-video--align-left .hero-video__inner {

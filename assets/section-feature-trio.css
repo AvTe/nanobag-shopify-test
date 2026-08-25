@@ -6,10 +6,14 @@
   The grid is intrinsic: auto-fit with a floor small enough that three columns
   still fit a 320px viewport, so it needs no breakpoint at all and works
   unchanged whether the merchant adds three blocks or six.
+
+  Note: Dawn sets html { font-size: 10px }, so 1rem is 10px here, not 16px.
+  Every rem below is written against that root.
 */
 
 .feature-trio {
-  padding-inline: clamp(1.25rem, 0.5rem + 4vw, 5rem);
+  /* 20px at 375px, 48px at 1440px, matching the live theme gutter. */
+  padding-inline: clamp(2rem, 0.96rem + 2.2vw, 4.8rem);
   padding-block: var(--feature-trio-padding-top, 0) var(--feature-trio-padding-bottom, 0);
   background: var(--feature-trio-background, #fff);
   color: var(--feature-trio-text, #121212);
@@ -21,8 +25,8 @@
 }
 
 .feature-trio__heading {
-  margin: 0 0 clamp(1rem, 0.7rem + 1.4vw, 2rem);
-  font-size: clamp(1.5rem, 1.15rem + 1.5vw, 2.5rem);
+  margin: 0 0 clamp(1.6rem, 1.12rem + 1.4vw, 3.2rem);
+  font-size: clamp(2.4rem, 1.84rem + 1.5vw, 4rem);
   font-weight: 700;
   line-height: 1.1;
   text-align: center;
@@ -31,8 +35,8 @@
 
 .feature-trio__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(5.5rem, 100%), 1fr));
-  gap: clamp(0.75rem, 0.3rem + 2vw, 2.5rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(8.8rem, 100%), 1fr));
+  gap: clamp(1.2rem, 0.48rem + 2vw, 4rem);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -42,7 +46,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(0.25rem, 0.15rem + 0.4vw, 0.5rem);
+  gap: clamp(0.4rem, 0.24rem + 0.4vw, 0.8rem);
   text-align: center;
   min-width: 0;
 }
@@ -52,13 +56,13 @@
   width: var(--feature-trio-icon-size, 76px);
   height: var(--feature-trio-icon-size, 76px);
   max-width: 100%;
-  margin-block-end: clamp(0.25rem, 0.1rem + 0.5vw, 0.75rem);
+  margin-block-end: clamp(0.4rem, 0.16rem + 0.5vw, 1.2rem);
   object-fit: contain;
 }
 
 .feature-trio__value {
   margin: 0;
-  font-size: clamp(0.8125rem, 0.72rem + 0.4vw, 1.125rem);
+  font-size: clamp(1.3rem, 1.152rem + 0.4vw, 1.8rem);
   font-weight: 700;
   line-height: 1.2;
   /* Values like "0.8 - 1.1 oz" must not break mid-measurement in a narrow
@@ -70,15 +74,15 @@
 .feature-trio__label {
   margin: 0;
   color: var(--feature-trio-muted, #6b6b6b);
-  font-size: clamp(0.75rem, 0.69rem + 0.26vw, 0.9375rem);
+  font-size: clamp(1.2rem, 1.104rem + 0.26vw, 1.5rem);
   line-height: 1.3;
 }
 
 .feature-trio__supporting {
   max-width: 34ch;
-  margin: clamp(1.25rem, 0.9rem + 1.6vw, 2.25rem) auto 0;
+  margin: clamp(2rem, 1.44rem + 1.6vw, 3.6rem) auto 0;
   color: var(--feature-trio-muted, #6b6b6b);
-  font-size: clamp(0.8125rem, 0.75rem + 0.31vw, 1rem);
+  font-size: clamp(1.3rem, 1.2rem + 0.31vw, 1.6rem);
   line-height: 1.5;
   text-align: center;
   text-wrap: pretty;

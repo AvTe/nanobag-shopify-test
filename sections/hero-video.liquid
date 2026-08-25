@@ -11,6 +11,7 @@
 {%- endcomment -%}
 {%- style -%}
   {{ section.settings.heading_font | font_face: font_display: 'swap' }}
+  {{ section.settings.heading_font_mobile | font_face: font_display: 'swap' }}
 {%- endstyle -%}
 
 {%- liquid
@@ -57,6 +58,10 @@
     --hero-overlay-text: {{ section.settings.overlay_text_color }};
     --hero-cta-scale: {{ section.settings.cta_size | divided_by: 100.0 }};
     --hero-heading-font: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+    --hero-heading-font-mobile: {{ section.settings.heading_font_mobile.family }}, {{ section.settings.heading_font_mobile.fallback_families }};
+    --hero-overlay-opacity-mobile: {{ section.settings.overlay_opacity_mobile | divided_by: 100.0 }};
+    --hero-badge-rotation: {{ section.settings.badge_rotation }}deg;
+    --hero-media-radius-desktop: {{ section.settings.media_radius_desktop }}px;
     --hero-heading-weight: {{ section.settings.heading_font.weight }};
     --hero-badge-size-mobile: {{ section.settings.badge_size_mobile }}px;
     --hero-media-radius: {{ section.settings.mobile_media_radius }}px;
@@ -244,8 +249,19 @@
       "max": 100,
       "step": 5,
       "unit": "%",
-      "default": 40,
-      "info": "Keep body text at 4.5:1 contrast against the poster."
+      "default": 20,
+      "info": "Figma uses 20% on the desktop frame. Keep body text at 4.5:1 over the poster."
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity_mobile",
+      "label": "Image overlay opacity (small screens)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 0,
+      "info": "The mobile frame has no overlay, because the copy sits below the media rather than on it."
     },
     {
       "type": "color",
@@ -296,8 +312,18 @@
       "max": 48,
       "step": 2,
       "unit": "px",
-      "default": 20,
+      "default": 30,
       "info": "Rounds the top corners of the video on small screens."
+    },
+    {
+      "type": "range",
+      "id": "media_radius_desktop",
+      "label": "Media corner radius (large screens)",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 24
     },
     {
       "type": "header",
@@ -328,7 +354,17 @@
       "max": 160,
       "step": 4,
       "unit": "px",
-      "default": 88
+      "default": 92
+    },
+    {
+      "type": "range",
+      "id": "badge_rotation",
+      "label": "Badge rotation on small screens",
+      "min": -30,
+      "max": 30,
+      "step": 1,
+      "unit": "deg",
+      "default": 15
     },
     {
       "type": "range",
@@ -338,7 +374,7 @@
       "max": 5,
       "step": 0.1,
       "default": 4.8,
-      "info": "Fills the stars. Update the caption below to match."
+      "info": "Fills the stars. Shopify caps range defaults at one decimal, so the caption below carries the exact figure."
     },
     {
       "type": "inline_richtext",
@@ -354,9 +390,16 @@
     {
       "type": "font_picker",
       "id": "heading_font",
-      "label": "Headline font",
-      "default": "assistant_n4",
-      "info": "The mobile design uses Fraunces. Pick it here if it is in the list; the theme font is used everywhere else."
+      "label": "Headline font (large screens)",
+      "default": "inter_n7",
+      "info": "Figma uses Inter SemiBold on the desktop frame."
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font_mobile",
+      "label": "Headline font (small screens)",
+      "default": "fraunces_n7",
+      "info": "Figma uses Fraunces on the mobile frame, with the second word italicised."
     },
     {
       "type": "inline_richtext",

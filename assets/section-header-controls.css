@@ -12,8 +12,23 @@
    icon itself grow, so a larger cart never costs accessibility. */
 
 .header__icon .svg-wrapper {
-  width: max(44px, var(--header-icon-size, 44px));
-  height: max(44px, var(--header-icon-size, 44px));
+  width: max(44px, var(--header-icon-size, 24px));
+  height: max(44px, var(--header-icon-size, 24px));
+}
+
+/* Figma draws the account and cart glyphs at 24px. Dawn fixes the wrapper at
+   44px, which is the tap target, so the glyph is sized inside it instead of
+   shrinking the hit area. */
+.header__icon .svg-wrapper > svg {
+  width: var(--header-icon-size, 24px);
+  height: var(--header-icon-size, 24px);
+}
+
+/* Inter Medium 18px, line-height 27px, from the desktop frame. */
+.header__menu-item {
+  font-size: var(--header-nav-size, 18px);
+  font-weight: 500;
+  line-height: 1.5;
 }
 
 /* Centred menu
@@ -32,8 +47,12 @@
 
 @media screen and (min-width: 990px) {
   .header--menu-center.header--middle-left {
-    grid-template-columns: 1fr auto 1fr;
-    column-gap: clamp(1rem, 0.4rem + 2vw, 3rem);
+    /* Track sizing taken from nanobag.com's own header
+       (.header--left-center). minmax(0, 1fr) lets the outer columns shrink
+       below their content instead of blowing the grid out, and fit-content(70%)
+       caps the menu so a long nav pushes the icons rather than overflowing. */
+    grid-template-columns: minmax(0, 1fr) fit-content(70%) minmax(0, 1fr);
+    column-gap: clamp(1.6rem, 0.64rem + 2vw, 4.8rem);
   }
 
   .header--menu-center .header__heading,

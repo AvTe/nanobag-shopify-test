@@ -89,9 +89,10 @@
         "padding_bottom": 20,
         "menu_alignment": "center",
         "logo_is_h1": false,
-        "icon_size": 56,
-        "logo_width_mobile": 110,
-        "show_account_mobile": false
+        "icon_size": 24,
+        "logo_width_mobile": 138,
+        "show_account_mobile": false,
+        "nav_font_size": 18
       }
     }
   },

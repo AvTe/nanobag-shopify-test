@@ -167,6 +167,7 @@
   class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}{% if transparent_header %} header-wrapper--transparent{% endif %}"
   style="
     --header-icon-size: {{ section.settings.icon_size }}px;
+    --header-nav-size: {{ section.settings.nav_font_size }}px;
     --header-logo-width-mobile: {{ section.settings.logo_width_mobile }}px;
     {%- if transparent_header %}
       --header-transparent-text: {{ section.settings.transparent_text_color }};
@@ -568,12 +569,22 @@
       "type": "range",
       "id": "icon_size",
       "label": "Header icon size",
-      "min": 44,
-      "max": 80,
+      "min": 16,
+      "max": 48,
       "step": 2,
       "unit": "px",
-      "default": 56,
-      "info": "Account and cart icons. 44px is the minimum accessible tap target and is never gone below."
+      "default": 24,
+      "info": "Glyph size for the account and cart icons. The 44px tap target is kept regardless."
+    },
+    {
+      "type": "range",
+      "id": "nav_font_size",
+      "label": "Menu link size",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 18
     },
     {
       "type": "range",
@@ -581,9 +592,9 @@
       "label": "Logo width on small screens",
       "min": 60,
       "max": 200,
-      "step": 5,
+      "step": 2,
       "unit": "px",
-      "default": 110,
+      "default": 138,
       "info": "Applies below 990px. Desktop width is set in Theme settings."
     },
     {

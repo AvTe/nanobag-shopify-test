@@ -10,13 +10,13 @@
 {
   "current": {
     "logo": "shopify://shop_images/Nanobag_LOGO_FINAL_RED_b3a9d0ae-919c-4b43-93bf-a01df74a7d1f.png",
-    "logo_width": 170,
+    "logo_width": 240,
     "favicon": "shopify://shop_images/favicon_nanobag.webp",
     "type_header_font": "inter_n4",
     "heading_scale": 100,
     "type_body_font": "inter_n4",
     "body_scale": 100,
-    "page_width": 1200,
+    "page_width": 1600,
     "spacing_sections": 0,
     "spacing_grid_horizontal": 8,
     "spacing_grid_vertical": 8,

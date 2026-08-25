@@ -5,12 +5,14 @@
   than the viewport, so it scrolls; on desktop it wraps and centres. The
   difference is what the row does when it runs out of room, not a second
   layout, so the markup is identical at every width.
+  Note: Dawn sets html { font-size: 10px }, so 1rem is 10px here, not 16px.
+  Every rem below is written against that root.
 */
 
 .logo-bar {
-  --logo-bar-gap: clamp(1.25rem, 0.4rem + 3.6vw, 3.5rem);
+  --logo-bar-gap: clamp(2rem, 0.64rem + 3.6vw, 5.6rem);
 
-  padding-inline: clamp(0.75rem, 0.3rem + 2vw, 1.5rem);
+  padding-inline: clamp(1.2rem, 0.48rem + 2vw, 2.4rem);
   padding-block: var(--logo-bar-padding-top, 0) var(--logo-bar-padding-bottom, 0);
 }
 
@@ -20,7 +22,7 @@
   gap: var(--logo-bar-gap);
   max-width: var(--page-width, 1400px);
   margin-inline: auto;
-  padding: clamp(1rem, 0.7rem + 1.4vw, 1.75rem) clamp(1rem, 0.5rem + 2.4vw, 2.5rem);
+  padding: clamp(1.6rem, 1.12rem + 1.4vw, 2.8rem) clamp(1.6rem, 0.8rem + 2.4vw, 4rem);
   border-radius: var(--logo-bar-radius, 30px);
   background: var(--logo-bar-background, #fff);
   color: var(--logo-bar-text, #121212);
@@ -30,7 +32,7 @@
 .logo-bar__eyebrow {
   flex: 0 0 auto;
   margin: 0;
-  font-size: clamp(0.5rem, 0.44rem + 0.26vw, 0.6875rem);
+  font-size: clamp(0.8rem, 0.704rem + 0.26vw, 1.1rem);
   font-weight: 700;
   letter-spacing: 0.09em;
   line-height: 1.2;
@@ -125,7 +127,7 @@
     flex: 0 1 auto;
     flex-wrap: wrap;
     justify-content: center;
-    row-gap: clamp(0.75rem, 0.5rem + 1vw, 1.25rem);
+    row-gap: clamp(1.2rem, 0.8rem + 1vw, 2rem);
   }
 
   .logo-bar__track--clone {
