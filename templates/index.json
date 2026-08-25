@@ -18,12 +18,14 @@
         "poster_image_mobile": "shopify://shop_images/295234fcfe70409691ab2b6f3f094d7c.thumbnail.0000000000_800x_be4d4793-8b1e-4b12-abfa-762cf7ebeec0.png",
         "overlay_opacity": 20,
         "overlay_opacity_mobile": 0,
+        "copy_scrim_opacity": 45,
         "overlay_color": "#ffffff",
         "section_height": 100,
         "mobile_media_ratio": "3 / 4",
         "mobile_media_radius": 30,
         "media_radius_desktop": 0,
         "badge_image": "shopify://shop_images/Group_1171275577_6361abee-22f3-4ca2-b1f1-cd733870f0a4.png",
+        "badge_image_mobile": "shopify://shop_images/ChatGPT_Image_Aug_6_2026_12_11_22_PM_1.png",
         "badge_alt": "Nomads Nation Best Tote 2025",
         "badge_size_mobile": 92,
         "badge_rotation": 15,
@@ -40,89 +42,11 @@
         "cta_text_color": "#ffffff",
         "cta_size": 100,
         "overlay_text_color": "#ffffff",
+        "section_background": "#121212",
         "card_background": "#ffffff",
         "card_text_color": "#121212",
         "content_alignment": "left",
-        "mobile_alignment": "center",
-        "section_background": "#121212",
-        "copy_scrim_opacity": 45
-      }
-    },
-    "logo_bar": {
-      "type": "logo-bar",
-      "blocks": {
-        "logo_1": {
-          "type": "logo",
-          "settings": {
-            "image_alt": "Forbes",
-            "link": "",
-            "bundled_logo": "forbes"
-          }
-        },
-        "logo_2": {
-          "type": "logo",
-          "settings": {
-            "image_alt": "Grommet",
-            "link": "",
-            "bundled_logo": "grommet"
-          }
-        },
-        "logo_3": {
-          "type": "logo",
-          "settings": {
-            "image_alt": "TrendHunter",
-            "link": "",
-            "bundled_logo": "trendhunter"
-          }
-        },
-        "logo_4": {
-          "type": "logo",
-          "settings": {
-            "image_alt": "GadgetFlow",
-            "link": "",
-            "bundled_logo": "gadgetflow"
-          }
-        },
-        "logo_5": {
-          "type": "logo",
-          "settings": {
-            "image_alt": "Tech I Want",
-            "link": "",
-            "bundled_logo": "techiwant"
-          }
-        },
-        "logo_6": {
-          "type": "logo",
-          "settings": {
-            "image_alt": "Indiegogo",
-            "link": "",
-            "bundled_logo": "indiegogo"
-          }
-        }
-      },
-      "block_order": [
-        "logo_1",
-        "logo_2",
-        "logo_3",
-        "logo_4",
-        "logo_5",
-        "logo_6"
-      ],
-      "settings": {
-        "eyebrow_text": "AS SEEN ON",
-        "card_background": "#ffffff",
-        "text_color": "#121212",
-        "card_radius": 40,
-        "logo_height": 28,
-        "enable_marquee_mobile": true,
-        "marquee_speed": 30,
-        "padding_top": 0,
-        "padding_bottom": 24,
-        "overlap_previous": 48,
-        "strip_height": 60,
-        "strip_gradient_from": "#f5f2ec",
-        "strip_gradient_to": "#ffffff",
-        "strip_border": "#e8ded1"
+        "mobile_alignment": "center"
       }
     },
     "feature_trio": {
@@ -162,6 +86,7 @@
         "feature_3"
       ],
       "settings": {
+        "visibility": "small",
         "heading": "",
         "supporting_text": "<p>Practical durable bags. Designed to disappear in your pocket.</p>",
         "background_color": "#ffffff",
@@ -174,8 +99,84 @@
         "tile_gradient_to": "#ffffff",
         "tile_border": "#e8ded1",
         "padding_top": 8,
-        "padding_bottom": 16,
-        "visibility": "small"
+        "padding_bottom": 16
+      }
+    },
+    "logo_bar": {
+      "type": "logo-bar",
+      "blocks": {
+        "logo_1": {
+          "type": "logo",
+          "settings": {
+            "bundled_logo": "forbes",
+            "image_alt": "Forbes",
+            "link": ""
+          }
+        },
+        "logo_2": {
+          "type": "logo",
+          "settings": {
+            "bundled_logo": "grommet",
+            "image_alt": "Grommet",
+            "link": ""
+          }
+        },
+        "logo_3": {
+          "type": "logo",
+          "settings": {
+            "bundled_logo": "trendhunter",
+            "image_alt": "TrendHunter",
+            "link": ""
+          }
+        },
+        "logo_4": {
+          "type": "logo",
+          "settings": {
+            "bundled_logo": "gadgetflow",
+            "image_alt": "GadgetFlow",
+            "link": ""
+          }
+        },
+        "logo_5": {
+          "type": "logo",
+          "settings": {
+            "bundled_logo": "techiwant",
+            "image_alt": "Tech I Want",
+            "link": ""
+          }
+        },
+        "logo_6": {
+          "type": "logo",
+          "settings": {
+            "bundled_logo": "indiegogo",
+            "image_alt": "Indiegogo",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "logo_1",
+        "logo_2",
+        "logo_3",
+        "logo_4",
+        "logo_5",
+        "logo_6"
+      ],
+      "settings": {
+        "eyebrow_text": "AS SEEN ON",
+        "card_background": "#ffffff",
+        "text_color": "#121212",
+        "card_radius": 40,
+        "logo_height": 28,
+        "strip_height": 60,
+        "strip_gradient_from": "#f5f2ec",
+        "strip_gradient_to": "#ffffff",
+        "strip_border": "#e8ded1",
+        "enable_marquee_mobile": true,
+        "marquee_speed": 30,
+        "overlap_previous": 48,
+        "padding_top": 0,
+        "padding_bottom": 24
       }
     },
     "video_gallery": {
@@ -221,22 +222,22 @@
         "video_4"
       ],
       "settings": {
+        "visibility": "small",
         "heading": "See it in action",
         "cta_text": "Choose your Nanobag",
         "cta_link": "",
         "media_ratio": "2 / 3",
+        "card_width": 49,
+        "card_radius": 20,
+        "play_size": 64,
         "background_color": "#ffffff",
         "text_color": "#121212",
         "cta_background": "#cc253e",
         "cta_text_color": "#ffffff",
-        "padding_top": 24,
-        "padding_bottom": 32,
-        "visibility": "small",
-        "card_width": 49,
-        "card_radius": 20,
-        "play_size": 64,
         "cta_width": 84,
-        "cta_border": "#ffffff"
+        "cta_border": "#ffffff",
+        "padding_top": 24,
+        "padding_bottom": 32
       }
     }
   },
