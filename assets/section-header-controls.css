@@ -117,7 +117,7 @@
 
 .header__menu-item[data-nav-label]:hover > span,
 .header__menu-item[data-nav-label]:focus-visible > span {
-  transform: translateY(-100%);
+  transform: translateY(-160%);
 }
 
 .header__menu-item[data-nav-label]:hover::after,
