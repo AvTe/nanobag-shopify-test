@@ -82,16 +82,20 @@
         {%- else -%}
           {%- comment -%}
             data-nav-label carries the label so CSS can draw the second copy of
-            the text with content: attr(). That keeps the vertical reveal to
-            Liquid and CSS with no duplicated node in the accessibility tree —
-            the pseudo-element is not announced, so a screen reader still hears
-            the link once.
+            the text with content: attr(), which keeps the vertical hover reveal
+            to Liquid and CSS with no JavaScript.
+
+            aria-label is required, not decorative. Chrome folds ::after content
+            into the accessible name, so without it the link is announced twice
+            — "Shop Shop". An explicit label takes precedence over the computed
+            name and it matches the visible text, so voice control still works.
           {%- endcomment -%}
           <a
             id="HeaderMenu-{{ link.handle }}"
             href="{{ link.url }}"
             class="header__menu-item list-menu__item link link--text focus-inset"
             data-nav-label="{{ link.title | escape }}"
+            aria-label="{{ link.title | escape }}"
             {% if link.current %}
               aria-current="page"
             {% endif %}
