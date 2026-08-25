@@ -83,7 +83,7 @@
         "show_account_mobile": false,
         "show_search": false,
         "header_full_width": true,
-        "header_gutter": 48,
+        "header_gutter": 28,
         "header_content_max": 1900,
         "menu_alignment": "center",
         "logo_is_h1": false,
