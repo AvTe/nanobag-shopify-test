@@ -58,15 +58,15 @@
         "announcement_5"
       ],
       "settings": {
+        "bar_height": 55,
+        "message_size": 16,
         "auto_rotate": true,
         "change_slides_speed": 5,
         "color_scheme": "scheme-4",
         "show_line_separator": false,
         "show_social": true,
         "enable_country_selector": true,
-        "enable_language_selector": false,
-        "bar_height": 55,
-        "message_size": 16
+        "enable_language_selector": false
       }
     },
     "header": {
@@ -74,7 +74,16 @@
       "settings": {
         "transparent_header": "index",
         "transparent_text_color": "#ffffff",
+        "icon_size": 28,
+        "nav_font_size": 18,
+        "logo_width_mobile": 138,
+        "show_account_mobile": false,
         "show_search": false,
+        "header_full_width": true,
+        "header_gutter": 48,
+        "header_content_max": 1900,
+        "menu_alignment": "center",
+        "logo_is_h1": true,
         "transparent_scrim_opacity": 35,
         "logo_position": "middle-left",
         "mobile_logo_position": "center",
@@ -88,16 +97,7 @@
         "enable_language_selector": true,
         "margin_bottom": 0,
         "padding_top": 20,
-        "padding_bottom": 20,
-        "menu_alignment": "center",
-        "logo_is_h1": false,
-        "icon_size": 28,
-        "logo_width_mobile": 138,
-        "show_account_mobile": false,
-        "nav_font_size": 18,
-        "header_full_width": true,
-        "header_gutter": 48,
-        "header_content_max": 1900
+        "padding_bottom": 20
       }
     }
   },
