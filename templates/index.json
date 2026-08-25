@@ -42,7 +42,7 @@
         "heading_font": "inter_n7",
         "heading_font_mobile": "fraunces_n7",
         "overlay_opacity_mobile": 0,
-        "media_radius_desktop": 24,
+        "media_radius_desktop": 0,
         "badge_rotation": 15
       }
     },

@@ -16,12 +16,15 @@
   height: max(44px, var(--header-icon-size, 24px));
 }
 
-/* Figma draws the account and cart glyphs at 24px. Dawn fixes the wrapper at
-   44px, which is the tap target, so the glyph is sized inside it instead of
-   shrinking the hit area. */
-.header__icon .svg-wrapper > svg {
-  width: var(--header-icon-size, 24px);
-  height: var(--header-icon-size, 24px);
+/* One setting drives every header glyph. Dawn's drawer toggle sits outside a
+   .svg-wrapper, so it needs its own selector or the hamburger and the cart end
+   up different sizes. Dawn fixes the wrapper at 44px, which is the tap target,
+   so the glyph is sized inside it rather than shrinking the hit area. */
+.header__icon .svg-wrapper > svg,
+.header__icon--menu > svg,
+.header__icon--menu .icon {
+  width: var(--header-icon-size, 28px);
+  height: var(--header-icon-size, 28px);
 }
 
 /* Inter Medium 18px, line-height 27px, from the desktop frame. */

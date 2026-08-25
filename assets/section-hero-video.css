@@ -289,6 +289,15 @@
     letter-spacing: -0.04em;
   }
 
+  /* The mobile frame italicises the second word; the desktop frame sets the
+     whole headline in one upright face. The same <em> in the content serves
+     both, so the merchant writes the heading once. */
+  .hero-video__heading em {
+    font-family: inherit;
+    font-style: normal;
+    font-weight: inherit;
+  }
+
   .hero-video__cta {
     font-weight: 600;
   }
