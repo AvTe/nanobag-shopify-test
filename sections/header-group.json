@@ -83,7 +83,7 @@
         "header_gutter": 48,
         "header_content_max": 1900,
         "menu_alignment": "center",
-        "logo_is_h1": true,
+        "logo_is_h1": false,
         "transparent_scrim_opacity": 35,
         "logo_position": "middle-left",
         "mobile_logo_position": "center",
