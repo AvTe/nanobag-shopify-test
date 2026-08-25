@@ -11,6 +11,9 @@
   "sections": {
     "hero_video": {
       "type": "hero-video",
+      "custom_css": [
+        "{padding-top: 50px; padding-bottom: 10px;}"
+      ],
       "settings": {
         "video_desktop": "shopify://files/videos/Desktop Video (1).mp4",
         "video_mobile": "shopify://files/videos/Mobile Banner Video.mp4",
