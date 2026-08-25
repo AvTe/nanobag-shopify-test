@@ -1,37 +1,76 @@
 {%- comment -%}
-  Accessible star rating.
+  Renders a fractional star rating.
 
-  Renders two stacked rows of five stars: a muted track and a gold fill layer
-  clipped to the rating percentage. This supports fractional ratings (4.8)
-  without shipping half-star and quarter-star icon variants, and without any
-  JavaScript.
-
-  The whole unit is a single role="img" with one label, so a screen reader
-  announces "Rated 4.8 out of 5 stars" instead of reading ten decorative shapes.
+  Two stacked rows of the same five stars: a muted track, and a coloured fill
+  clipped to a percentage width. This handles values like 4.8 without half-star
+  assets and without a script.
 
   Accepts:
-  - rating: {Number} value out of 5
-  - class:  {String} optional extra class on the wrapper
+    rating (number, 0 to 5) - required
+    class  (string)         - optional wrapper class
+
+  Usage:
+    {%- render 'star-rating', rating: 4.8, class: 'hero-video__stars' -%}
 {%- endcomment -%}
 
 {%- liquid
-  assign rating_value = rating | default: 5
-  assign fill_percent = rating_value | times: 20.0
+  assign value = rating | default: 0
+  if value > 5
+    assign value = 5
+  endif
+  if value < 0
+    assign value = 0
+  endif
+  assign fill_width = value | times: 20.0
+  assign label = 'Rated ' | append: value | append: ' out of 5 stars'
 -%}
 
-<span
-  class="star-rating {{ class }}"
-  role="img"
-  aria-label="{{ 'accessibility.star_reviews_info' | t: rating_value: rating_value, rating_max: 5 }}"
->
-  <span class="star-rating__layer star-rating__layer--track" aria-hidden="true">
-    {%- for i in (1..5) -%}
-      {%- render 'icon-star' -%}
-    {%- endfor -%}
+{%- capture star_icon -%}
+  <svg class="star-rating__icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M12 2.4l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.42l-5.88 3.09 1.12-6.55L2.48 9.32l6.58-.96L12 2.4z"/></svg>
+{%- endcapture -%}
+
+<span class="star-rating {{ class }}" role="img" aria-label="{{ label | escape }}">
+  <span class="star-rating__track" aria-hidden="true">
+    {%- for i in (1..5) -%}{{ star_icon }}{%- endfor -%}
   </span>
-  <span class="star-rating__layer star-rating__layer--fill" style="width: {{ fill_percent }}%;" aria-hidden="true">
-    {%- for i in (1..5) -%}
-      {%- render 'icon-star' -%}
-    {%- endfor -%}
+  <span class="star-rating__fill" style="width: {{ fill_width }}%" aria-hidden="true">
+    {%- for i in (1..5) -%}{{ star_icon }}{%- endfor -%}
   </span>
 </span>
+
+{%- unless star_rating_styles_rendered -%}
+  {%- assign star_rating_styles_rendered = true -%}
+  {%- style -%}
+    .star-rating {
+      position: relative;
+      display: inline-block;
+      line-height: 0;
+      flex: none;
+      color: var(--hero-star-color, #f5a623);
+    }
+
+    .star-rating__track,
+    .star-rating__fill {
+      display: flex;
+      gap: 0.08em;
+    }
+
+    .star-rating__track {
+      opacity: 0.26;
+    }
+
+    .star-rating__fill {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-start: 0;
+      overflow: hidden;
+    }
+
+    .star-rating__icon {
+      width: 1.05em;
+      height: 1.05em;
+      flex: none;
+      fill: currentColor;
+    }
+  {%- endstyle -%}
+{%- endunless -%}
