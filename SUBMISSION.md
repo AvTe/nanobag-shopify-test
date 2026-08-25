@@ -494,8 +494,8 @@ comparing:
 
 | Deliverable | Where |
 | --- | --- |
-| Preview URL | see below |
-| Code / access | `github.com/AvTe/nanobag-shopify-test` |
+| Preview URL | **https://nanobags.myshopify.com/** — publicly reachable, no password needed |
+| Code / access | **https://github.com/AvTe/nanobag-shopify-test** |
 | CRO recommendations | §3 above, and [`docs/CRO.md`](docs/CRO.md) |
 | SEO recommendations | §4 above, and [`docs/SEO.md`](docs/SEO.md) |
 | Technical decisions note | §2 above, and [`docs/TECHNICAL-DECISIONS.md`](docs/TECHNICAL-DECISIONS.md) |
