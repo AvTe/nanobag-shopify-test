@@ -17,13 +17,20 @@
         "poster_image": "shopify://shop_images/295234fcfe70409691ab2b6f3f094d7c.thumbnail.0000000000_800x_be4d4793-8b1e-4b12-abfa-762cf7ebeec0.png",
         "poster_image_mobile": "shopify://shop_images/295234fcfe70409691ab2b6f3f094d7c.thumbnail.0000000000_800x_be4d4793-8b1e-4b12-abfa-762cf7ebeec0.png",
         "overlay_opacity": 20,
+        "overlay_opacity_mobile": 0,
         "overlay_color": "#ffffff",
         "section_height": 90,
         "mobile_media_ratio": "3 / 4",
+        "mobile_media_radius": 30,
+        "media_radius_desktop": 0,
         "badge_image": "shopify://shop_images/Group_1171275577_6361abee-22f3-4ca2-b1f1-cd733870f0a4.png",
         "badge_alt": "Nomads Nation Best Tote 2025",
+        "badge_size_mobile": 92,
+        "badge_rotation": 15,
         "rating_value": 4.8,
         "rating_text": "<strong>4.85</strong> stars • <strong>200k+</strong> customers",
+        "heading_font": "inter_n7",
+        "heading_font_mobile": "fraunces_n7",
         "heading": "Extreme <em>practicality</em>",
         "heading_tag": "h1",
         "subheading": "Zero bulk, Maximum Carry.",
@@ -31,19 +38,12 @@
         "cta_link": "",
         "cta_background": "#cc253e",
         "cta_text_color": "#ffffff",
+        "cta_size": 100,
         "overlay_text_color": "#ffffff",
         "card_background": "#ffffff",
         "card_text_color": "#121212",
         "content_alignment": "left",
-        "mobile_alignment": "center",
-        "cta_size": 100,
-        "badge_size_mobile": 92,
-        "mobile_media_radius": 30,
-        "heading_font": "inter_n7",
-        "heading_font_mobile": "fraunces_n7",
-        "overlay_opacity_mobile": 0,
-        "media_radius_desktop": 0,
-        "badge_rotation": 15
+        "mobile_alignment": "center"
       }
     },
     "logo_bar": {
@@ -118,6 +118,7 @@
         "feature_1": {
           "type": "feature",
           "settings": {
+            "icon": "shopify://shop_images/ChatGPT_Image_Aug_7_2026_11_33_54_AM_1.png",
             "icon_alt": "",
             "value": "0.8 - 1.1 oz",
             "label": "Ultralight"
@@ -126,6 +127,7 @@
         "feature_2": {
           "type": "feature",
           "settings": {
+            "icon": "shopify://shop_images/NB_Listing_Hero_Images_6_3.png",
             "icon_alt": "",
             "value": "Compact",
             "label": "Design"
@@ -134,6 +136,7 @@
         "feature_3": {
           "type": "feature",
           "settings": {
+            "icon": "shopify://shop_images/ChatGPT_Image_Aug_7_2026_11_33_54_AM_2.png",
             "icon_alt": "",
             "value": "66 lb",
             "label": "Load rating"
@@ -152,13 +155,13 @@
         "text_color": "#121212",
         "label_color": "#121212",
         "icon_size": 56,
-        "padding_top": 8,
-        "padding_bottom": 16,
         "tile_size": 111,
         "tile_radius": 24,
         "tile_gradient_from": "#f5f2ec",
         "tile_gradient_to": "#ffffff",
-        "tile_border": "#e8ded1"
+        "tile_border": "#e8ded1",
+        "padding_top": 8,
+        "padding_bottom": 16
       }
     },
     "video_gallery": {
