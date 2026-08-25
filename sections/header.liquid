@@ -158,13 +158,14 @@
 
 {%- if transparent_header -%}
   {{ 'section-header-transparent.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'header-transparent.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 
 <{{ header_tag }}
   {% if header_tag == 'sticky-header' %}
     data-sticky-type="{{ section.settings.sticky_header_type }}"
   {% endif %}
-  class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}{% if transparent_header %} header-wrapper--transparent{% endif %}"
+  {% if transparent_header %}data-overlay-target="{{ section.settings.overlay_target | default: '.hero-video' }}" {% endif %}class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}{% if transparent_header %} header-wrapper--transparent{% endif %}"
   style="
     --header-icon-size: {{ section.settings.icon_size }}px;
     --header-nav-size: {{ section.settings.nav_font_size }}px;
@@ -673,6 +674,13 @@
       "unit": "%",
       "default": 35,
       "info": "Darkens the top of the hero behind the header. Raise it if the video is light at the top."
+    },
+    {
+      "type": "text",
+      "id": "overlay_target",
+      "label": "Section the header overlays",
+      "default": ".hero-video",
+      "info": "CSS selector for the section behind the header. The header turns solid once this section has scrolled past."
     },
     {
       "type": "select",

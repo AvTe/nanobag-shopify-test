@@ -4,6 +4,11 @@
   Loaded only when the overlay setting is on, so a store that does not use it
   downloads none of this.
 
+  The solid state is driven by an observer on the overlaid section, not by
+  Dawn's sticky classes: "on-scroll-up" marks the header sticky the moment the
+  visitor scrolls up anywhere, which turned it white while still over the hero.
+  See assets/header-transparent.js.
+
   The header is pulled over the section below it with a negative margin rather
   than position: absolute. Absolute positioning would take the header out of
   flow relative to the viewport and cover the announcement bar, which sits
@@ -21,8 +26,17 @@
   rather than a broken one if sticky scrolling is turned off.
 */
 
+/*
+  position: sticky rather than relative. Dawn's sticky-header adds transforms
+  and its own positioning when it decides the header should stick; forcing
+  relative here meant those transforms had nothing to stick to, so the header
+  was translated out of place and slid over the hero instead of holding at the
+  top. Sticky satisfies both jobs: it still creates the stacking context the
+  z-index needs, and it pins correctly once Dawn takes over.
+*/
 .section-header:has(.header-wrapper--transparent) {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 3;
   margin-block-end: calc(-1 * var(--header-height, 0px));
 }
@@ -95,26 +109,26 @@
   longer the hero: once scrolled past, while sticky, and while a dropdown or
   the mobile drawer is open.
 */
-.shopify-section-header-sticky .header-wrapper--transparent,
-.shopify-section-header-hidden .header-wrapper--transparent,
+.header-wrapper--transparent.header-wrapper--solid,
 .header-wrapper--transparent:has(details[open]) {
   background: rgb(var(--color-background));
+  transition: background-color 0.2s ease;
 }
 
-.shopify-section-header-sticky .header-wrapper--transparent::before,
+.header-wrapper--transparent.header-wrapper--solid::before,
 .header-wrapper--transparent:has(details[open])::before {
   opacity: 0;
 }
 
-.shopify-section-header-sticky .header-wrapper--transparent .header__heading-link,
-.shopify-section-header-sticky .header-wrapper--transparent .header__menu-item,
-.shopify-section-header-sticky .header-wrapper--transparent .header__icon,
+.header-wrapper--solid.header-wrapper--transparent .header__heading-link,
+.header-wrapper--solid.header-wrapper--transparent .header__menu-item,
+.header-wrapper--solid.header-wrapper--transparent .header__icon,
 .header-wrapper--transparent:has(details[open]) .header__menu-item,
 .header-wrapper--transparent:has(details[open]) .header__icon {
   color: rgb(var(--color-foreground));
 }
 
-.shopify-section-header-sticky .header-wrapper--transparent .cart-count-bubble {
+.header-wrapper--solid.header-wrapper--transparent .cart-count-bubble {
   background: rgb(var(--color-foreground));
   color: rgb(var(--color-background));
 }
