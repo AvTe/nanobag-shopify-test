@@ -7,6 +7,11 @@
     --feature-trio-text: {{ section.settings.text_color }};
     --feature-trio-muted: {{ section.settings.label_color }};
     --feature-trio-icon-size: {{ section.settings.icon_size }}px;
+    --feature-trio-tile-size: {{ section.settings.tile_size }}px;
+    --feature-trio-tile-radius: {{ section.settings.tile_radius }}px;
+    --feature-trio-tile-from: {{ section.settings.tile_gradient_from }};
+    --feature-trio-tile-to: {{ section.settings.tile_gradient_to }};
+    --feature-trio-tile-border: {{ section.settings.tile_border }};
     --feature-trio-padding-top: {{ section.settings.padding_top }}px;
     --feature-trio-padding-bottom: {{ section.settings.padding_bottom }}px;
   "
@@ -20,18 +25,26 @@
       <ul class="feature-trio__grid" role="list">
         {%- for block in section.blocks -%}
           <li class="feature-trio__item" {{ block.shopify_attributes }}>
-            {%- if block.settings.icon != blank -%}
-              {{
-                block.settings.icon
-                | image_url: width: 240
-                | image_tag:
-                  class: 'feature-trio__icon',
-                  loading: 'lazy',
-                  widths: '60, 120, 180, 240',
-                  sizes: '80px',
-                  alt: block.settings.icon_alt
-              }}
-            {%- endif -%}
+            {%- comment -%}
+              The icon sits inside a tile in the Figma frame: a rounded square
+              with a vertical gradient and a hairline border. The tile is a
+              span rather than styling on the image itself, so a merchant can
+              upload a transparent PNG of any aspect ratio and it still centres.
+            {%- endcomment -%}
+            <span class="feature-trio__tile">
+              {%- if block.settings.icon != blank -%}
+                {{
+                  block.settings.icon
+                  | image_url: width: 240
+                  | image_tag:
+                    class: 'feature-trio__icon',
+                    loading: 'lazy',
+                    widths: '60, 120, 180, 240',
+                    sizes: '80px',
+                    alt: block.settings.icon_alt
+                }}
+              {%- endif -%}
+            </span>
 
             {%- if block.settings.value != blank -%}
               <p class="feature-trio__value">{{ block.settings.value | escape }}</p>
@@ -70,34 +83,129 @@
       "label": "Supporting text",
       "default": "<p>Practical durable bags. Designed to disappear in your pocket.</p>"
     },
-    { "type": "header", "content": "Appearance" },
-    { "type": "color", "id": "background_color", "label": "Background", "default": "#ffffff" },
-    { "type": "color", "id": "text_color", "label": "Value and heading colour", "default": "#121212" },
-    { "type": "color", "id": "label_color", "label": "Label colour", "default": "#6b6b6b" },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Value and heading colour",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label colour",
+      "default": "#6b6b6b"
+    },
     {
       "type": "range",
       "id": "icon_size",
-      "label": "Icon size",
-      "min": 32, "max": 140, "step": 4, "unit": "px", "default": 76
+      "label": "Icon size inside the tile",
+      "min": 24,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 56
     },
-    { "type": "header", "content": "Spacing" },
-    { "type": "range", "id": "padding_top", "label": "Top padding", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 8 },
-    { "type": "range", "id": "padding_bottom", "label": "Bottom padding", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 16 }
+    {
+      "type": "range",
+      "id": "tile_size",
+      "label": "Tile size",
+      "min": 64,
+      "max": 160,
+      "step": 1,
+      "unit": "px",
+      "default": 111
+    },
+    {
+      "type": "range",
+      "id": "tile_radius",
+      "label": "Tile corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "tile_gradient_from",
+      "label": "Tile gradient top",
+      "default": "#f5f2ec"
+    },
+    {
+      "type": "color",
+      "id": "tile_gradient_to",
+      "label": "Tile gradient bottom",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "tile_border",
+      "label": "Tile border",
+      "default": "#e8ded1"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    }
   ],
   "blocks": [
     {
       "type": "feature",
       "name": "Feature",
       "settings": [
-        { "type": "image_picker", "id": "icon", "label": "Icon" },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon"
+        },
         {
           "type": "text",
           "id": "icon_alt",
           "label": "Icon alt text",
           "info": "Leave empty where the value and label already say everything the icon shows."
         },
-        { "type": "text", "id": "value", "label": "Value", "default": "0.8 - 1.1 oz" },
-        { "type": "text", "id": "label", "label": "Label", "default": "Ultralight" }
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Value",
+          "default": "0.8 - 1.1 oz"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Ultralight"
+        }
       ]
     }
   ],
@@ -105,9 +213,27 @@
     {
       "name": "Feature trio",
       "blocks": [
-        { "type": "feature", "settings": { "value": "0.8 - 1.1 oz", "label": "Ultralight" } },
-        { "type": "feature", "settings": { "value": "Compact", "label": "Design" } },
-        { "type": "feature", "settings": { "value": "66 lb", "label": "Load rating" } }
+        {
+          "type": "feature",
+          "settings": {
+            "value": "0.8 - 1.1 oz",
+            "label": "Ultralight"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "value": "Compact",
+            "label": "Design"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "value": "66 lb",
+            "label": "Load rating"
+          }
+        }
       ]
     }
   ]

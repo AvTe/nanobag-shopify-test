@@ -36,7 +36,8 @@
 .feature-trio__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(8.8rem, 100%), 1fr));
-  gap: clamp(1.2rem, 0.48rem + 2vw, 4rem);
+  /* 8px between tiles at 390px, per the frame. */
+  gap: clamp(0.8rem, 0.5rem + 1.2vw, 2.4rem);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -51,20 +52,40 @@
   min-width: 0;
 }
 
+/* Rounded tile behind each icon, per the Figma frame: 111px square, 24px
+   radius, vertical gradient, hairline border. */
+.feature-trio__tile {
+  display: grid;
+  place-items: center;
+  width: min(100%, var(--feature-trio-tile-size, 111px));
+  aspect-ratio: 1;
+  margin-block-end: clamp(0.8rem, 0.5rem + 1vw, 1.6rem);
+  border: 1px solid var(--feature-trio-tile-border, #e8ded1);
+  border-radius: var(--feature-trio-tile-radius, 24px);
+  background: linear-gradient(
+    to bottom,
+    var(--feature-trio-tile-from, #f5f2ec),
+    var(--feature-trio-tile-to, #fff)
+  );
+}
+
 .feature-trio__icon {
   display: block;
-  width: var(--feature-trio-icon-size, 76px);
-  height: var(--feature-trio-icon-size, 76px);
+  width: var(--feature-trio-icon-size, 56px);
+  height: var(--feature-trio-icon-size, 56px);
   max-width: 100%;
-  margin-block-end: clamp(0.4rem, 0.16rem + 0.5vw, 1.2rem);
   object-fit: contain;
+  /* The frame blends the product cut-outs into the tile gradient. */
+  mix-blend-mode: multiply;
 }
 
 .feature-trio__value {
   margin: 0;
-  font-size: clamp(1.3rem, 1.152rem + 0.4vw, 1.8rem);
+  /* Inter Bold 16px, line-height 1.4. */
+  font-size: 1.6rem;
   font-weight: 700;
-  line-height: 1.2;
+  color: var(--feature-trio-text, #121212);
+  line-height: 1.4;
   /* Values like "0.8 - 1.1 oz" must not break mid-measurement in a narrow
      column, but must still be allowed to wrap if the merchant writes a long
      one. */
@@ -73,17 +94,19 @@
 
 .feature-trio__label {
   margin: 0;
-  color: var(--feature-trio-muted, #6b6b6b);
-  font-size: clamp(1.2rem, 1.104rem + 0.26vw, 1.5rem);
-  line-height: 1.3;
+  /* Inter Regular 16px in the frame, same colour as the value. */
+  color: var(--feature-trio-muted, #121212);
+  font-size: 1.6rem;
+  line-height: 1.4;
 }
 
 .feature-trio__supporting {
-  max-width: 34ch;
+  max-width: 32.9rem;
   margin: clamp(2rem, 1.44rem + 1.6vw, 3.6rem) auto 0;
   color: var(--feature-trio-muted, #6b6b6b);
-  font-size: clamp(1.3rem, 1.2rem + 0.31vw, 1.6rem);
-  line-height: 1.5;
+  /* Inter Regular 16px, line-height 1.6, 329px wide in the frame. */
+  font-size: 1.6rem;
+  line-height: 1.6;
   text-align: center;
   text-wrap: pretty;
 }

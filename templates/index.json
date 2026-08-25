@@ -104,8 +104,8 @@
         "eyebrow_text": "AS SEEN ON",
         "card_background": "#ffffff",
         "text_color": "#121212",
-        "card_radius": 30,
-        "logo_height": 26,
+        "card_radius": 40,
+        "logo_height": 30,
         "enable_marquee_mobile": true,
         "marquee_speed": 30,
         "padding_top": 0,
@@ -150,10 +150,15 @@
         "supporting_text": "<p>Practical durable bags. Designed to disappear in your pocket.</p>",
         "background_color": "#ffffff",
         "text_color": "#121212",
-        "label_color": "#6b6b6b",
-        "icon_size": 76,
+        "label_color": "#121212",
+        "icon_size": 56,
         "padding_top": 8,
-        "padding_bottom": 16
+        "padding_bottom": 16,
+        "tile_size": 111,
+        "tile_radius": 24,
+        "tile_gradient_from": "#f5f2ec",
+        "tile_gradient_to": "#ffffff",
+        "tile_border": "#e8ded1"
       }
     },
     "video_gallery": {
