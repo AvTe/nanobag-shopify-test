@@ -20,7 +20,7 @@
 }
 
 .feature-trio__inner {
-  max-width: var(--page-width, 1400px);
+  max-width: var(--page-width, 120rem);
   margin-inline: auto;
 }
 
@@ -117,4 +117,23 @@
 
 .feature-trio__supporting > :last-child {
   margin-block-end: 0;
+}
+
+/* Visibility
+   ------------------------------------------------------------------
+   The supplied desktop frame contains only the hero and the logo bar, so this
+   section can be limited to small screens. This is a content decision exposed
+   in the editor, not a second layout: the markup is identical either way and
+   only whether it renders changes. */
+
+@media screen and (min-width: 750px) {
+  .feature-trio--visibility-small {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .feature-trio--visibility-large {
+    display: none;
+  }
 }

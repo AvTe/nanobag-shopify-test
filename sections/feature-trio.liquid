@@ -1,7 +1,7 @@
 {{ 'section-feature-trio.css' | asset_url | stylesheet_tag }}
 
 <div
-  class="feature-trio"
+  class="feature-trio feature-trio--visibility-{{ section.settings.visibility }}"
   style="
     --feature-trio-background: {{ section.settings.background_color }};
     --feature-trio-text: {{ section.settings.text_color }};
@@ -71,6 +71,27 @@
   "class": "section-feature-trio",
   "max_blocks": 6,
   "settings": [
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "Show this section on",
+      "options": [
+        {
+          "value": "all",
+          "label": "All screens"
+        },
+        {
+          "value": "small",
+          "label": "Small screens only"
+        },
+        {
+          "value": "large",
+          "label": "Large screens only"
+        }
+      ],
+      "default": "all",
+      "info": "The supplied desktop frame contains only the hero and the logo bar, so this section is set to small screens."
+    },
     {
       "type": "text",
       "id": "heading",

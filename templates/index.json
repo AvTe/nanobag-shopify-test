@@ -18,7 +18,7 @@
         "poster_image_mobile": "shopify://shop_images/295234fcfe70409691ab2b6f3f094d7c.thumbnail.0000000000_800x_be4d4793-8b1e-4b12-abfa-762cf7ebeec0.png",
         "overlay_opacity": 20,
         "overlay_color": "#ffffff",
-        "section_height": 90,
+        "section_height": 100,
         "mobile_media_ratio": "3 / 4",
         "badge_image": "shopify://shop_images/Group_1171275577_6361abee-22f3-4ca2-b1f1-cd733870f0a4.png",
         "badge_alt": "Nomads Nation Best Tote 2025",
@@ -158,7 +158,8 @@
         "tile_radius": 24,
         "tile_gradient_from": "#f5f2ec",
         "tile_gradient_to": "#ffffff",
-        "tile_border": "#e8ded1"
+        "tile_border": "#e8ded1",
+        "visibility": "small"
       }
     },
     "video_gallery": {
@@ -209,7 +210,8 @@
         "cta_background": "#cc253e",
         "cta_text_color": "#ffffff",
         "padding_top": 24,
-        "padding_bottom": 32
+        "padding_bottom": 32,
+        "visibility": "small"
       }
     }
   },

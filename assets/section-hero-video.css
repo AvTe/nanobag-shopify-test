@@ -79,7 +79,7 @@
   display: flex;
   justify-content: center;
   width: 100%;
-  max-width: var(--page-width, 1400px);
+  max-width: var(--page-width, 120rem);
   margin-inline: auto;
   margin-block-start: calc(-1 * var(--hero-card-overlap));
   /* 20px at 375px, 48px at 1440px, matching the live theme gutter. */

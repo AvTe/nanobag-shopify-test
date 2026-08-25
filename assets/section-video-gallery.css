@@ -20,7 +20,7 @@
 }
 
 .video-gallery__inner {
-  max-width: var(--page-width, 1400px);
+  max-width: var(--page-width, 120rem);
   margin-inline: auto;
 }
 
@@ -138,5 +138,24 @@
 
   .video-gallery__cta:hover {
     transform: none;
+  }
+}
+
+/* Visibility
+   ------------------------------------------------------------------
+   The supplied desktop frame contains only the hero and the logo bar, so this
+   section can be limited to small screens. This is a content decision exposed
+   in the editor, not a second layout: the markup is identical either way and
+   only whether it renders changes. */
+
+@media screen and (min-width: 750px) {
+  .video-gallery--visibility-small {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .video-gallery--visibility-large {
+    display: none;
   }
 }
