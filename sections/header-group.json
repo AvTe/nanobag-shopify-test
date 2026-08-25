@@ -74,11 +74,17 @@
     },
     "header": {
       "type": "header",
+      "custom_css": [
+        ".header__active-menu-item{text-decoration: auto;}"
+      ],
       "settings": {
         "transparent_header": "index",
         "transparent_text_color": "#ffffff",
         "icon_size": 28,
         "nav_font_size": 18,
+        "nav_hover_background": "#121212",
+        "nav_hover_text": "#ffffff",
+        "nav_reveal_duration": 350,
         "logo_width_mobile": 138,
         "show_account_mobile": false,
         "show_search": false,
@@ -88,6 +94,8 @@
         "menu_alignment": "center",
         "logo_is_h1": false,
         "transparent_scrim_opacity": 35,
+        "solid_blur": 14,
+        "solid_opacity": 72,
         "overlay_target": ".hero-video",
         "logo_position": "middle-left",
         "mobile_logo_position": "center",
@@ -101,12 +109,7 @@
         "enable_language_selector": true,
         "margin_bottom": 0,
         "padding_top": 20,
-        "padding_bottom": 20,
-        "solid_blur": 14,
-        "solid_opacity": 72,
-        "nav_hover_background": "#121212",
-        "nav_hover_text": "#ffffff",
-        "nav_reveal_duration": 350
+        "padding_bottom": 20
       }
     }
   },
