@@ -105,14 +105,49 @@
 }
 
 /*
-  Revert to the solid header in every state where the content behind it is no
-  longer the hero: once scrolled past, while sticky, and while a dropdown or
-  the mobile drawer is open.
+  Once the overlaid section has scrolled past, the header takes a frosted
+  background rather than a flat fill: a translucent tint over a blurred
+  backdrop, so the page reads as continuing underneath it instead of being cut
+  off by a bar.
+
+  A dropdown or the mobile drawer opens the same state, because the panel
+  behind needs a readable surface.
+
+  The tint is applied on top of the blur rather than instead of it. Blur alone
+  does not guarantee contrast — it smears whatever colour is behind, so light
+  content stays light. The tint is what actually holds the 4.5:1 for the dark
+  links, and the blur is what makes it look like glass.
 */
 .header-wrapper--transparent.header-wrapper--solid,
 .header-wrapper--transparent:has(details[open]) {
-  background: rgb(var(--color-background));
-  transition: background-color 0.2s ease;
+  background: rgb(var(--color-background) / var(--header-solid-opacity, 0.72));
+  backdrop-filter: blur(var(--header-solid-blur, 14px)) saturate(1.6);
+  -webkit-backdrop-filter: blur(var(--header-solid-blur, 14px)) saturate(1.6);
+  transition: background-color 0.25s ease, backdrop-filter 0.25s ease;
+}
+
+/*
+  Without backdrop-filter there is nothing to blur, so a translucent tint would
+  just be a washed-out bar over live content. Those browsers get the opaque
+  fill instead.
+*/
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .header-wrapper--transparent.header-wrapper--solid,
+  .header-wrapper--transparent:has(details[open]) {
+    background: rgb(var(--color-background));
+  }
+}
+
+/* A hairline keeps the frosted bar from floating without an edge. */
+.header-wrapper--transparent.header-wrapper--solid {
+  border-block-end: 1px solid rgb(var(--color-foreground) / 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header-wrapper--transparent.header-wrapper--solid,
+  .header-wrapper--transparent:has(details[open]) {
+    transition: none;
+  }
 }
 
 .header-wrapper--transparent.header-wrapper--solid::before,

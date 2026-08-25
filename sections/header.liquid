@@ -172,6 +172,8 @@
     --header-gutter: {{ section.settings.header_gutter }}px;
     --header-content-max: {{ section.settings.header_content_max }}px;
     --header-logo-width-mobile: {{ section.settings.logo_width_mobile }}px;
+    --header-solid-blur: {{ section.settings.solid_blur }}px;
+    --header-solid-opacity: {{ section.settings.solid_opacity | divided_by: 100.0 }};
     {%- if transparent_header %}
       --header-transparent-text: {{ section.settings.transparent_text_color }};
       --header-scrim-opacity: {{ section.settings.transparent_scrim_opacity | divided_by: 100.0 }};
@@ -674,6 +676,28 @@
       "unit": "%",
       "default": 35,
       "info": "Darkens the top of the hero behind the header. Raise it if the video is light at the top."
+    },
+    {
+      "type": "range",
+      "id": "solid_blur",
+      "label": "Scrolled header blur",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "info": "Frosted-glass strength once the hero has scrolled past. 0 removes the blur."
+    },
+    {
+      "type": "range",
+      "id": "solid_opacity",
+      "label": "Scrolled header tint",
+      "min": 40,
+      "max": 100,
+      "step": 2,
+      "unit": "%",
+      "default": 72,
+      "info": "How opaque the background is over the blur. Lower shows more of the page; below about 60% the links start losing contrast."
     },
     {
       "type": "text",
